@@ -1,94 +1,112 @@
-# 10x Astro Starter
+# BP Tracker
 
-A modern, opinionated starter template for building fast, accessible, and AI-friendly web applications.
+A lightweight web application that helps users manually record, interpret and export blood pressure measurements according to the 2023 European Society of Cardiology / European Society of Hypertension (ESC/ESH) guidelines.
+
+---
+
+## Table of Contents
+
+1. [Project Description](#project-description)
+2. [Tech Stack](#tech-stack)
+3. [Getting Started Locally](#getting-started-locally)
+4. [Available Scripts](#available-scripts)
+5. [Project Scope](#project-scope)
+6. [Project Status](#project-status)
+7. [License](#license)
+
+---
+
+## Project Description
+
+BP Tracker allows users to quickly add blood-pressure readings, receive an immediate guideline-based interpretation (normal / elevated / hypertension), view visual alerts, schedule e-mail reminders and export the full measurement history to CSV. All interpretations are stored for audit purposes and a basic authentication layer guarantees data privacy.
+
+Key features:
+
+- **Add measurements in seconds** – default timestamp, field validation & safety ranges.
+- **Automatic interpretation** – green, orange or red classification using ESC/ESH 2023.
+- **Visual alerts** – colour & icon indicators on the measurement list.
+- **Edit / delete** – maintain clean and accurate records.
+- **Reminder e-mails** – sent at 08:00 and 20:00 (opt-out available).
+- **CSV export** – semicolon-separated UTF-8 for easy sharing with healthcare providers.
+
+---
 
 ## Tech Stack
 
-- [Astro](https://astro.build/) v5.5.5 - Modern web framework for building fast, content-focused websites
-- [React](https://react.dev/) v19.0.0 - UI library for building interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
+- **Frontend**: Astro 5, React 19, TypeScript 5
+- **Styling**: Tailwind CSS 4, Shadcn/UI, Lucide-React icons
+- **Backend-as-a-Service**: Supabase (PostgreSQL, Auth, Storage)
+- **Tooling**: ESlint, Prettier, Husky & lint-staged, Node `22.14.0`
 
-## Prerequisites
+---
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
+## Getting Started Locally
 
-## Getting Started
+### Prerequisites
 
-1. Clone the repository:
+- [Node.js](https://nodejs.org/) `22.14.0` (run `nvm use` to match `.nvmrc`)
+- npm v10 (shipped with Node) or an alternative package manager
 
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
-```
-
-2. Install dependencies:
+### Installation
 
 ```bash
-npm install
+# 1. Clone the repository
+$ git clone git@github.com:ptolloczko/10x-bp-tracker.git && cd 10x-bp-tracker
+
+# 2. Install dependencies
+$ npm install
+
+# 3. Start the dev server
+$ npm run dev
 ```
 
-3. Run the development server:
+The app will be available at `http://localhost:4321` (Astro default).
+
+### Building for Production
 
 ```bash
-npm run dev
+# Generate production build
+$ npm run build
+
+# Preview the production build locally
+$ npm run preview
 ```
 
-4. Build for production:
-
-```bash
-npm run build
-```
+---
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
+| Script             | Purpose                              |
+| ------------------ | ------------------------------------ |
+| `npm run dev`      | Start Astro in development mode      |
+| `npm run build`    | Build the static production site     |
+| `npm run preview`  | Preview the production build locally |
+| `npm run lint`     | Run ESLint on the entire project     |
+| `npm run lint:fix` | Autofix lint issues where possible   |
+| `npm run format`   | Format the codebase with Prettier    |
 
-## Project Structure
+---
 
-```md
-.
-├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   └── assets/     # Static assets
-├── public/         # Public assets
-```
+## Project Scope
 
-## AI Development Support
+The MVP intentionally excludes the following:
 
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
+- Sharing measurements between users
+- Device integrations or mobile apps
+- Multi-language support
+- Data at-rest encryption, backups & disaster recovery
+- Password reset / session auto-logout
 
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
+Please refer to [`docs/PRD.md`](./.ai/prd.md) for the full product requirements.
 
-### Cursor IDE
+---
 
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
+## Project Status
 
-### GitHub Copilot
+Active MVP development – contributions & issues welcome!
 
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
-
-### Windsurf
-
-The `.windsurfrules` file contains AI configuration for Windsurf.
-
-## Contributing
-
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project.
+---
 
 ## License
 
-MIT
+Released under the [MIT License](./LICENSE). Feel free to use, share and contribute.
