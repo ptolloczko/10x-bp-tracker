@@ -1,5 +1,5 @@
 {
-  "name": "10x-astro-starter",
+  "name": "10x-bp-tracker",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
@@ -9,7 +9,10 @@
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "supabase:start": "./scripts/start-supabase.sh",
+    "supabase:status": "supabase status",
+    "supabase:stop": "supabase stop"
   },
   "dependencies": {
     "@astrojs/node": "^9.4.3",
@@ -47,6 +50,7 @@
     "husky": "9.1.7",
     "lint-staged": "15.5.0",
     "prettier-plugin-astro": "0.14.1",
+    "supabase": "2.54.11",
     "typescript-eslint": "8.28.0"
   },
   "lint-staged": {

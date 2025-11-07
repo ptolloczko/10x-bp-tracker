@@ -1,5 +1,11 @@
 {
+  "editor.formatOnSave": true,
   "eslint.enable": true,
+  "tailwindCSS.classFunctions": ["cva", "cx"],
+  "workbench.activityBar.orientation": "vertical",
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "astro"],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
