@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "supabase:start": "./scripts/start-supabase.sh",
     "supabase:status": "supabase status",
-    "supabase:stop": "supabase stop"
+    "supabase:stop": "supabase stop",
+    "supabase:restart": "supabase stop && supabase start"
   },
   "dependencies": {
     "@astrojs/node": "^9.4.3",
