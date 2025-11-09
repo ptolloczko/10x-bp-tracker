@@ -19,6 +19,29 @@ export class ProfileService {
   constructor(private supabase: SupabaseClient) {}
 
   /**
+   * Retrieves the profile for the given user.
+   *
+   * @param userId - The authenticated user's ID
+   * @returns The user's profile or null if not found
+   * @throws {Error} For database errors
+   */
+  async getProfile(userId: string): Promise<ProfileDTO | null> {
+    const { data: profile, error } = await this.supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("[ProfileService] Error fetching profile:", error);
+      throw new Error("Failed to fetch profile");
+    }
+
+    return profile;
+  }
+
+  /**
    * Creates a new profile for the given user.
    *
    * @param userId - The authenticated user's ID

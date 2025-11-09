@@ -10,6 +10,49 @@ import type { ProfileDTO } from "../../types";
 export const prerender = false;
 
 /**
+ * GET /api/profile
+ *
+ * Retrieves the user's profile using DEFAULT_USER_ID.
+ * (Authentication will be implemented later)
+ *
+ * @returns 200 - Profile data
+ * @returns 404 - Profile not found
+ * @returns 500 - Server error
+ */
+export const GET: APIRoute = async ({ locals }) => {
+  try {
+    // 1. Fetch profile via service using DEFAULT_USER_ID
+    const profileService = new ProfileService(locals.supabase);
+    const profile = await profileService.getProfile(DEFAULT_USER_ID);
+
+    // 2. Handle profile not found
+    if (!profile) {
+      return new Response(JSON.stringify({ error: "ProfileNotFound" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 3. Return profile data
+    return new Response(JSON.stringify(profile), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store",
+      },
+    });
+  } catch (error) {
+    // Handle unexpected errors
+    // eslint-disable-next-line no-console
+    console.error("[GET /api/profile] Unexpected error:", error);
+    return new Response(JSON.stringify({ error: "ServerError" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+};
+
+/**
  * POST /api/profile
  *
  * Creates a user profile immediately after registration.
