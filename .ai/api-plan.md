@@ -125,6 +125,49 @@ Patch-style replacement; any subset of fields allowed.
 }
 ```
 
+#### 2.3.0 GET /api/measurements
+
+Returns a paginated list of measurements for the authenticated user.
+Use the query parameters defined above under “Common Query Parameters”.
+
+- Response 200
+
+```json
+{
+  "data": [
+    {
+      "id": "uuid-1",
+      "sys": 132,
+      "dia": 86,
+      "pulse": 79,
+      "level": "high_normal",
+      "measured_at": "2025-11-07T07:45:00Z",
+      "notes": "Morning reading",
+      "created_at": "2025-11-07T08:00:00Z",
+      "updated_at": "2025-11-07T08:00:00Z"
+    },
+    {
+      "id": "uuid-2",
+      "sys": 120,
+      "dia": 80,
+      "pulse": 72,
+      "level": "normal",
+      "measured_at": "2025-11-06T20:10:00Z",
+      "notes": "Evening reading",
+      "created_at": "2025-11-06T20:11:00Z",
+      "updated_at": "2025-11-06T20:11:00Z"
+    }
+  ],
+  "page": 1,
+  "page_size": 20,
+  "total": 143
+}
+```
+
+- Errors
+  - 401 – unauthorized (missing/invalid JWT)
+  - 400 – invalid query parameters
+
 #### 2.3.1 POST /api/measurements
 
 - Request
