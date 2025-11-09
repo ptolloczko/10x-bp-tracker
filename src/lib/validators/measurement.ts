@@ -1,5 +1,8 @@
 // src/lib/validators/measurement.ts
 import { z } from "zod";
+import type { Database } from "../../db/database.types";
+
+type BpLevel = Database["public"]["Enums"]["bp_level"];
 
 /**
  * Zod schema for validating POST /api/measurements request body.
@@ -61,3 +64,77 @@ export const CreateMeasurementSchema = z
   });
 
 export type CreateMeasurementInput = z.infer<typeof CreateMeasurementSchema>;
+
+/**
+ * Zod schema for validating GET /api/measurements query parameters.
+ *
+ * Query params:
+ * - page: number >= 1 (default: 1)
+ * - page_size: number 1-100 (default: 20)
+ * - from: ISO datetime string (start of measured_at range)
+ * - to: ISO datetime string (end of measured_at range)
+ * - level: single bp_level or comma-separated list
+ * - sort: 'asc' | 'desc' (default: 'desc')
+ */
+export const GetMeasurementsQuerySchema = z
+  .object({
+    page: z
+      .string()
+      .optional()
+      .transform((val) => (val ? parseInt(val, 10) : 1))
+      .pipe(z.number().int().min(1, "Numer strony musi być >= 1")),
+    page_size: z
+      .string()
+      .optional()
+      .transform((val) => (val ? parseInt(val, 10) : 20))
+      .pipe(z.number().int().min(1, "Rozmiar strony musi być >= 1").max(100, "Rozmiar strony nie może być > 100")),
+    from: z
+      .string()
+      .datetime("Parametr 'from' musi być w formacie ISO 8601")
+      .optional()
+      .transform((val) => (val ? val : undefined)),
+    to: z
+      .string()
+      .datetime("Parametr 'to' musi być w formacie ISO 8601")
+      .optional()
+      .transform((val) => (val ? val : undefined)),
+    level: z
+      .string()
+      .optional()
+      .refine(
+        (val) => {
+          if (!val) return true;
+          // Split by comma and validate each level
+          const levels = val.split(",").map((l) => l.trim());
+          const validLevels: BpLevel[] = [
+            "optimal",
+            "normal",
+            "high_normal",
+            "grade1",
+            "grade2",
+            "grade3",
+            "hypertensive_crisis",
+          ];
+          for (const level of levels) {
+            if (!validLevels.includes(level as BpLevel)) {
+              return false;
+            }
+          }
+          return true;
+        },
+        {
+          message:
+            "Nieprawidłowy poziom ciśnienia. Dozwolone: optimal, normal, high_normal, grade1, grade2, grade3, hypertensive_crisis",
+        }
+      )
+      .transform((val) => (val ? val : undefined)),
+    sort: z
+      .enum(["asc", "desc"], {
+        errorMap: () => ({ message: "Parametr 'sort' musi być 'asc' lub 'desc'" }),
+      })
+      .optional()
+      .default("desc"),
+  })
+  .strict();
+
+export type GetMeasurementsQueryInput = z.infer<typeof GetMeasurementsQuerySchema>;

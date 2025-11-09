@@ -2,12 +2,75 @@
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
 
-import { CreateMeasurementSchema } from "../../../lib/validators/measurement";
+import { CreateMeasurementSchema, GetMeasurementsQuerySchema } from "../../../lib/validators/measurement";
 import { MeasurementService, MeasurementDuplicateError } from "../../../lib/services/measurement.service";
 import { DEFAULT_USER_ID } from "../../../db/supabase.client";
-import type { MeasurementDTO } from "../../../types";
+import type { MeasurementDTO, MeasurementListResponse } from "../../../types";
 
 export const prerender = false;
+
+/**
+ * GET /api/measurements
+ *
+ * Returns a paginated list of blood pressure measurements for the authenticated user.
+ * Supports filtering by date range, BP level, and sorting.
+ *
+ * @returns 200 - Paginated list of measurements
+ * @returns 400 - Invalid query parameters
+ * @returns 401 - Unauthorized (not implemented yet)
+ * @returns 500 - Server error
+ */
+export const GET: APIRoute = async ({ url, locals }) => {
+  try {
+    // 1. Parse and validate query parameters
+    const queryParams = Object.fromEntries(url.searchParams);
+    const validatedQuery = GetMeasurementsQuerySchema.parse(queryParams);
+
+    // 2. Fetch measurements via service (using DEFAULT_USER_ID for now)
+    const measurementService = new MeasurementService(locals.supabase);
+    const response: MeasurementListResponse = await measurementService.list(
+      DEFAULT_USER_ID,
+      validatedQuery as Parameters<typeof measurementService.list>[1]
+    );
+
+    // 3. Return paginated measurements
+    return new Response(JSON.stringify(response), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store",
+      },
+    });
+  } catch (error) {
+    // Handle validation errors from Zod
+    if (error instanceof ZodError) {
+      return new Response(
+        JSON.stringify({
+          error: "ValidationError",
+          details: error.flatten(),
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Handle unexpected errors
+    // eslint-disable-next-line no-console
+    console.error("[GET /api/measurements] Unexpected error:", error);
+    return new Response(
+      JSON.stringify({
+        error: "ServerError",
+        message: "An unexpected error occurred",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+};
 
 /**
  * POST /api/measurements

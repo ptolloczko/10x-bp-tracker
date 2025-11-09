@@ -91,12 +91,104 @@ $ npm run preview
 | ------------------------------------- | ------------------------------------------- |
 | `./scripts/test-get-profile.sh`       | Test GET /api/profile endpoint              |
 | `./scripts/test-post-measurement.sh`  | Test POST /api/measurements endpoint        |
+| `./scripts/test-get-measurements.sh`  | Test GET /api/measurements endpoint         |
 | `./scripts/test-bp-classification.sh` | Test BP classification against ESC/ESH 2023 |
 | `./scripts/cleanup-test-profile.sh`   | Clean up test profile data                  |
 
 ---
 
 ## API Documentation
+
+### GET /api/measurements
+
+Returns a paginated list of blood pressure measurements with optional filtering and sorting.
+
+**Endpoint:** `GET /api/measurements`
+
+**Query Parameters:**
+
+| Parameter   | Type                        | Default | Description                                              |
+| ----------- | --------------------------- | ------- | -------------------------------------------------------- |
+| `page`      | number (≥1)                 | `1`     | Page number                                              |
+| `page_size` | number (1-100)              | `20`    | Number of items per page                                 |
+| `from`      | ISO 8601 datetime           | -       | Start of measured_at range (inclusive)                   |
+| `to`        | ISO 8601 datetime           | -       | End of measured_at range (inclusive)                     |
+| `level`     | bp_level or comma-separated | -       | Filter by BP level (e.g., `optimal` or `optimal,normal`) |
+| `sort`      | `asc` \| `desc`             | `desc`  | Sort order by measured_at                                |
+
+**Response (200 OK):**
+
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "sys": 120,
+      "dia": 80,
+      "pulse": 72,
+      "level": "normal",
+      "measured_at": "2024-11-09T08:30:00+00:00",
+      "notes": "Morning measurement",
+      "created_at": "2024-11-09T08:31:00+00:00",
+      "updated_at": "2024-11-09T08:31:00+00:00"
+    }
+  ],
+  "page": 1,
+  "page_size": 20,
+  "total": 42
+}
+```
+
+**Error Responses:**
+
+**400 Bad Request - Validation Error:**
+
+```json
+{
+  "error": "ValidationError",
+  "details": {
+    "fieldErrors": {
+      "page": ["Numer strony musi być >= 1"]
+    }
+  }
+}
+```
+
+**500 Internal Server Error:**
+
+```json
+{
+  "error": "ServerError",
+  "message": "An unexpected error occurred"
+}
+```
+
+**Example Usage:**
+
+```bash
+# Get all measurements (default pagination)
+curl http://localhost:3000/api/measurements
+
+# Get page 2 with 10 items per page
+curl "http://localhost:3000/api/measurements?page=2&page_size=10"
+
+# Filter by BP level (hypertensive crisis)
+curl "http://localhost:3000/api/measurements?level=hypertensive_crisis"
+
+# Filter by multiple BP levels
+curl "http://localhost:3000/api/measurements?level=optimal,normal"
+
+# Filter by date range
+curl "http://localhost:3000/api/measurements?from=2024-11-01T00:00:00Z&to=2024-11-09T23:59:59Z"
+
+# Sort ascending (oldest first)
+curl "http://localhost:3000/api/measurements?sort=asc"
+
+# Combined filters
+curl "http://localhost:3000/api/measurements?level=grade1,grade2&from=2024-11-01T00:00:00Z&sort=asc&page_size=5"
+```
+
+---
 
 ### POST /api/measurements
 

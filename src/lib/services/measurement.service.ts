@@ -1,7 +1,15 @@
 // src/lib/services/measurement.service.ts
 import type { SupabaseClient } from "../../db/supabase.client";
-import type { CreateMeasurementCommand, MeasurementDTO } from "../../types";
+import type { Database } from "../../db/database.types";
+import type {
+  CreateMeasurementCommand,
+  MeasurementDTO,
+  MeasurementListQuery,
+  MeasurementListResponse,
+} from "../../types";
 import { classify } from "../utils/bp-classifier";
+
+type BpLevel = Database["public"]["Enums"]["bp_level"];
 
 /**
  * Custom error thrown when attempting to create a measurement with a duplicate timestamp.
@@ -87,5 +95,74 @@ export class MeasurementService {
     const { user_id, deleted, ...measurementDTO } = newMeasurement;
 
     return measurementDTO;
+  }
+
+  /**
+   * Retrieves a paginated list of measurements for the given user.
+   *
+   * @param userId - The authenticated user's ID
+   * @param query - Query parameters (page, page_size, filters, sort)
+   * @returns Paginated list of measurements
+   * @throws {Error} For database errors
+   */
+  async list(userId: string, query: MeasurementListQuery): Promise<MeasurementListResponse> {
+    const page = query.page ?? 1;
+    const pageSize = query.page_size ?? 20;
+    const sort = query.sort ?? "desc";
+
+    // Calculate range for pagination
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+
+    // Build base query
+    let queryBuilder = this.supabase
+      .from("measurements")
+      .select("*", { count: "exact" })
+      .eq("user_id", userId)
+      .eq("deleted", false);
+
+    // Apply filters
+    if (query.from) {
+      queryBuilder = queryBuilder.gte("measured_at", query.from);
+    }
+
+    if (query.to) {
+      queryBuilder = queryBuilder.lte("measured_at", query.to);
+    }
+
+    if (query.level) {
+      // Handle both single level and comma-separated list
+      const levels = query.level.includes(",") ? (query.level.split(",") as BpLevel[]) : ([query.level] as BpLevel[]);
+      queryBuilder = queryBuilder.in("level", levels);
+    }
+
+    // Apply sorting
+    queryBuilder = queryBuilder.order("measured_at", { ascending: sort === "asc" });
+
+    // Apply pagination
+    queryBuilder = queryBuilder.range(from, to);
+
+    // Execute query
+    const { data: measurements, error, count } = await queryBuilder;
+
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("[MeasurementService] Error listing measurements:", error);
+      throw new Error("Failed to list measurements");
+    }
+
+    // Map to DTOs (remove internal fields)
+    const measurementDTOs: MeasurementDTO[] = (measurements ?? []).map((measurement) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { user_id, deleted, ...dto } = measurement;
+      return dto;
+    });
+
+    return {
+      data: measurementDTOs,
+      page,
+      page_size: pageSize,
+      total: count ?? 0,
+    };
   }
 }
