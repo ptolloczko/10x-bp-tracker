@@ -1,0 +1,9 @@
+---
+// src/pages/profile.astro
+import Layout from "@/layouts/Layout.astro";
+import ProfileView from "@/components/views/ProfileView";
+---
+
+<Layout title="Ustawienia Profilu">
+  <ProfileView client:load />
+</Layout>

@@ -1,6 +1,6 @@
 // src/lib/services/profile.service.ts
 import type { SupabaseClient } from "../../db/supabase.client";
-import type { CreateProfileCommand, ProfileDTO } from "../../types";
+import type { CreateProfileCommand, ProfileDTO, UpdateProfileCommand } from "../../types";
 
 /**
  * Custom error thrown when attempting to create a profile that already exists.
@@ -85,5 +85,63 @@ export class ProfileService {
     }
 
     return newProfile;
+  }
+
+  /**
+   * Updates an existing profile for the given user.
+   *
+   * @param userId - The authenticated user's ID
+   * @param data - Partial profile data to update
+   * @returns The updated profile
+   * @throws {Error} For database errors or if profile not found
+   */
+  async updateProfile(userId: string, data: UpdateProfileCommand): Promise<ProfileDTO> {
+    const { data: updatedProfile, error } = await this.supabase
+      .from("profiles")
+      .update(data)
+      .eq("user_id", userId)
+      .select()
+      .single();
+
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("[ProfileService] Error updating profile:", error);
+      throw new Error("Failed to update profile");
+    }
+
+    if (!updatedProfile) {
+      throw new Error("Profile not found");
+    }
+
+    return updatedProfile;
+  }
+
+  /**
+   * Toggles email reminders for the given user.
+   *
+   * @param userId - The authenticated user's ID
+   * @param enabled - Whether reminders should be enabled
+   * @returns The updated profile
+   * @throws {Error} For database errors or if profile not found
+   */
+  async toggleReminder(userId: string, enabled: boolean): Promise<ProfileDTO> {
+    const { data: updatedProfile, error } = await this.supabase
+      .from("profiles")
+      .update({ reminder_enabled: enabled })
+      .eq("user_id", userId)
+      .select()
+      .single();
+
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("[ProfileService] Error toggling reminder:", error);
+      throw new Error("Failed to toggle reminder");
+    }
+
+    if (!updatedProfile) {
+      throw new Error("Profile not found");
+    }
+
+    return updatedProfile;
   }
 }

@@ -48,6 +48,19 @@ export type CreateProfileCommand = Omit<
 export type UpdateProfileCommand = Partial<Omit<ProfileEntity, "user_id" | "created_at" | "updated_at">>;
 
 /**
+ * View model for profile form (used with react-hook-form)
+ * Main difference from DTO: dob is a Date object for DatePicker compatibility
+ */
+export interface ProfileFormViewModel {
+  first_name: string;
+  last_name: string;
+  dob: Date;
+  sex: "male" | "female" | "other";
+  weight: number;
+  phone: string;
+}
+
+/**
  * Body accepted by POST /api/profile/reminder
  */
 export interface ToggleReminderCommand {

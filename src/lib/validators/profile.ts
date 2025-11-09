@@ -31,3 +31,80 @@ export const CreateProfileInput = z
   .strict(); // Reject unknown fields
 
 export type CreateProfileInput = z.infer<typeof CreateProfileInput>;
+
+/**
+ * Zod schema for validating PUT /api/profile request body.
+ *
+ * Requirements for profile form (all fields required when updating):
+ * - first_name, last_name: minimum 2 characters
+ * - dob: must be a date in the past
+ * - sex: one of "male", "female", "other"
+ * - weight: positive number, max 999.9
+ * - phone: E.164 format phone number
+ */
+export const UpdateProfileSchema = z.object({
+  first_name: z
+    .string()
+    .trim()
+    .min(2, "Imię musi mieć co najmniej 2 znaki")
+    .max(100, "Imię nie może być dłuższe niż 100 znaków"),
+  last_name: z
+    .string()
+    .trim()
+    .min(2, "Nazwisko musi mieć co najmniej 2 znaki")
+    .max(100, "Nazwisko nie może być dłuższe niż 100 znaków"),
+  dob: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Data musi być w formacie YYYY-MM-DD")
+    .refine((date) => {
+      const parsedDate = new Date(date);
+      return parsedDate < new Date();
+    }, "Data urodzenia musi być w przeszłości"),
+  sex: z.enum(["male", "female", "other"], {
+    errorMap: () => ({ message: "Wybierz płeć" }),
+  }),
+  weight: z
+    .number({
+      required_error: "Waga jest wymagana",
+      invalid_type_error: "Waga musi być liczbą",
+    })
+    .positive("Waga musi być większa od 0")
+    .max(999.9, "Waga nie może być większa niż 999.9 kg"),
+  phone: z.string().regex(/^\+[1-9]\d{1,14}$/, "Telefon musi być w formacie E.164 (np. +48123123123)"),
+});
+
+export type UpdateProfileInput = z.infer<typeof UpdateProfileSchema>;
+
+/**
+ * Schema for profile form view model (used with react-hook-form)
+ * The main difference is that dob is a Date object for the DatePicker
+ */
+export const ProfileFormSchema = z.object({
+  first_name: z
+    .string()
+    .trim()
+    .min(2, "Imię musi mieć co najmniej 2 znaki")
+    .max(100, "Imię nie może być dłuższe niż 100 znaków"),
+  last_name: z
+    .string()
+    .trim()
+    .min(2, "Nazwisko musi mieć co najmniej 2 znaki")
+    .max(100, "Nazwisko nie może być dłuższe niż 100 znaków"),
+  dob: z.date({
+    required_error: "Data urodzenia jest wymagana",
+    invalid_type_error: "Nieprawidłowy format daty",
+  }),
+  sex: z.enum(["male", "female", "other"], {
+    errorMap: () => ({ message: "Wybierz płeć" }),
+  }),
+  weight: z
+    .number({
+      required_error: "Waga jest wymagana",
+      invalid_type_error: "Waga musi być liczbą",
+    })
+    .positive("Waga musi być większa od 0")
+    .max(999.9, "Waga nie może być większa niż 999.9 kg"),
+  phone: z.string().regex(/^\+[1-9]\d{1,14}$/, "Telefon musi być w formacie E.164 (np. +48123123123)"),
+});
+
+export type ProfileFormInput = z.infer<typeof ProfileFormSchema>;

@@ -2,7 +2,7 @@
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
 
-import { CreateProfileInput } from "../../lib/validators/profile";
+import { CreateProfileInput, UpdateProfileSchema } from "../../lib/validators/profile";
 import { ProfileService, ProfileExistsError } from "../../lib/services/profile.service";
 import { DEFAULT_USER_ID } from "../../db/supabase.client";
 import type { ProfileDTO } from "../../types";
@@ -107,6 +107,71 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Handle unexpected errors
     // eslint-disable-next-line no-console
     console.error("[POST /api/profile] Unexpected error:", error);
+    return new Response(JSON.stringify({ error: "ServerError" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+};
+
+/**
+ * PUT /api/profile
+ *
+ * Updates the user's profile with the provided data.
+ * (Authentication will be implemented later)
+ *
+ * @returns 200 - Profile updated successfully
+ * @returns 400 - Invalid request body
+ * @returns 404 - Profile not found
+ * @returns 500 - Server error
+ */
+export const PUT: APIRoute = async ({ request, locals }) => {
+  try {
+    // 1. Parse and validate request body
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return new Response(JSON.stringify({ error: "ValidationError", details: "Invalid JSON in request body" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const validatedData = UpdateProfileSchema.parse(body);
+
+    // 2. Update profile via service using DEFAULT_USER_ID
+    const profileService = new ProfileService(locals.supabase);
+    const profile: ProfileDTO = await profileService.updateProfile(DEFAULT_USER_ID, validatedData);
+
+    // 3. Return updated profile
+    return new Response(JSON.stringify(profile), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    // Handle validation errors from Zod
+    if (error instanceof ZodError) {
+      return new Response(
+        JSON.stringify({
+          error: "ValidationError",
+          details: error.flatten(),
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Handle profile not found
+    if (error instanceof Error && error.message === "Profile not found") {
+      return new Response(JSON.stringify({ error: "ProfileNotFound" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Handle unexpected errors
+    // eslint-disable-next-line no-console
+    console.error("[PUT /api/profile] Unexpected error:", error);
     return new Response(JSON.stringify({ error: "ServerError" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
