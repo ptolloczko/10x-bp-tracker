@@ -53,8 +53,17 @@ Manualne wprowadzanie pomiarów w arkuszach kalkulacyjnych jest czasochłonne i 
 | US-008 | Eksport danych          | Jako użytkownik chcę pobrać swoje pomiary w CSV, aby przekazać je lekarzowi.                                                                                | 1. Opcja eksportu generuje plik CSV w formacie UTF-8; średnik.<br>2. Plik zawiera wszystkie kolumny: date;sys;dia;pulse;level;notes.                                                                                       |
 | US-009 | Przypomnienia e-mail    | Jako użytkownik chcę otrzymywać przypomnienia o 8:00 i 20:00, abym nie zapomniał o pomiarze.                                                                | 1. System wysyła e-mail w ustalonych godzinach.<br>2. Użytkownik może wyłączyć przypomnienia w ustawieniach profilu.<br>3. Wyłączenie natychmiast przerywa wysyłkę.                                                        |
 | US-010 | Zarządzanie profilem    | Jako użytkownik chcę uzupełnić dane profilu (imię, nazwisko, data urodzenia, płeć, waga, telefon), aby aplikacja była spersonalizowana.                     | 1. Formularz profilu waliduje wymagane pola.<br>2. Zmiany zapisywane są w bazie.<br>3. Po zapisaniu wyświetla się potwierdzenie.                                                                                           |
-| US-011 | Bezpieczny dostęp       | Jako użytkownik chcę mieć pewność, że tylko ja widzę swoje dane, dlatego system powinien wymagać uwierzytelnienia przed dostępem do jakichkolwiek pomiarów. | 1. Niezalogowany użytkownik przekierowany jest na stronę logowania przy próbie wejścia na chronione strony.<br>2. Szyfrowane połączenie HTTPS jest wymagane na wszystkich stronach.                                        |
-| US-012 | Walidacja danych        | Jako użytkownik chcę, aby aplikacja odrzucała wartości nielogiczne (np. sys < dia), aby uniknąć błędnych wpisów.                                            | 1. Formularz blokuje wprowadzenie danych poza ustalonym zakresem (TBD).<br>2. Użytkownik otrzymuje jasny komunikat błędu.                                                                                                  |
+| US-011 | Bezpieczny dostęp       | Jako użytkownik chcę mieć pewność, że tylko ja widzę swoje dane, dlatego system powinien wymagać uwierzytelnienia przed dostępem do jakichkolwiek pomiarów. | 1. Niezalogowany użytkownik przekierowany jest na stronę logowania przy próbie wejścia na chronione strony.<br>2.                                                                                                          |
+
+- Logowanie i rejestracja odbywają się na dedykowanych stronach.
+- Logowanie wymaga podania adresu email i hasła.
+- Rejestracja wymaga podania adresu email, hasła i potwierdzenia hasła.
+- Użytkownik NIE MOŻE korzystać ze stron measurements and profile bez logowania się do systemu (US-002).
+- Użytkownik może logować się do systemu poprzez przycisk w prawym górnym rogu.
+- Użytkownik może się wylogować z systemu poprzez przycisk w prawym górnym rogu w głównym @Layout.astro.
+- Nie korzystamy z zewnętrznych serwisów logowania (np. Google, GitHub).
+- Odzyskiwanie hasła powinno być możliwe. |
+  | US-012 | Walidacja danych | Jako użytkownik chcę, aby aplikacja odrzucała wartości nielogiczne (np. sys < dia), aby uniknąć błędnych wpisów. | 1. Formularz blokuje wprowadzenie danych poza ustalonym zakresem (TBD).<br>2. Użytkownik otrzymuje jasny komunikat błędu. |
 
 ## 6. Metryki sukcesu
 
