@@ -36,6 +36,7 @@ Key features:
 - **Frontend**: Astro 5, React 19, TypeScript 5
 - **Styling**: Tailwind CSS 4, Shadcn/UI, Lucide-React icons
 - **Backend-as-a-Service**: Supabase (PostgreSQL, Auth, Storage)
+- **Testing**: Vitest + React Testing Library (unit/integration), Playwright (E2E/UI), Playwright-axe (accessibility)
 - **Tooling**: ESlint, Prettier, Husky & lint-staged, Node `22.14.0`
 
 ---

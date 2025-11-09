@@ -167,4 +167,3 @@ export class AuthApiClient {
 
 // Export singleton instance
 export const authApiClient = new AuthApiClient();
-

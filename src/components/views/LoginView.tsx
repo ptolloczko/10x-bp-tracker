@@ -18,7 +18,7 @@ export default function LoginView() {
     try {
       // Call the login API endpoint
       await authApiClient.login(data);
-      
+
       // On success, redirect to measurements page
       window.location.href = "/measurements";
     } catch (err) {
@@ -34,9 +34,7 @@ export default function LoginView() {
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold tracking-tight">Logowanie</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Zaloguj się do swojego konta BP Tracker
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">Zaloguj się do swojego konta BP Tracker</p>
         </div>
 
         {/* Form Card */}
@@ -46,10 +44,7 @@ export default function LoginView() {
           {/* Additional Links */}
           <div className="mt-6 space-y-4">
             <div className="text-center">
-              <a
-                href="/forgot-password"
-                className="text-sm text-primary hover:underline"
-              >
+              <a href="/forgot-password" className="text-sm text-primary hover:underline">
                 Nie pamiętam hasła
               </a>
             </div>
@@ -58,16 +53,11 @@ export default function LoginView() {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
-                  Nie masz konta?
-                </span>
+                <span className="bg-card px-2 text-muted-foreground">Nie masz konta?</span>
               </div>
             </div>
             <div className="text-center">
-              <a
-                href="/register"
-                className="text-sm text-primary hover:underline"
-              >
+              <a href="/register" className="text-sm text-primary hover:underline">
                 Zarejestruj się
               </a>
             </div>
@@ -77,5 +67,3 @@ export default function LoginView() {
     </div>
   );
 }
-
-

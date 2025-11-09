@@ -100,33 +100,31 @@ export default function ResetPasswordView() {
     }
 
     // Listen for auth state changes (for hash-based tokens)
-    const { data: authListener } = supabaseClient.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!mounted) return;
+    const { data: authListener } = supabaseClient.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
 
-        console.log("[ResetPassword] Auth state changed:", event, "Session exists:", !!session);
+      console.log("[ResetPassword] Auth state changed:", event, "Session exists:", !!session);
 
-        // PASSWORD_RECOVERY event means token was valid
-        if (event === "PASSWORD_RECOVERY" && session) {
-          console.log("[ResetPassword] Password recovery token valid!");
-          setTokenValid(true);
-          setIsValidatingToken(false);
-          isValidatingRef.current = false;
-        } else if (event === "SIGNED_IN" && session) {
-          // Sometimes Supabase emits SIGNED_IN instead of PASSWORD_RECOVERY
-          console.log("[ResetPassword] User signed in (could be recovery)");
-          setTokenValid(true);
-          setIsValidatingToken(false);
-          isValidatingRef.current = false;
-        } else if (event === "INITIAL_SESSION" && session) {
-          // Initial session exists
-          console.log("[ResetPassword] Initial session found");
-          setTokenValid(true);
-          setIsValidatingToken(false);
-          isValidatingRef.current = false;
-        }
+      // PASSWORD_RECOVERY event means token was valid
+      if (event === "PASSWORD_RECOVERY" && session) {
+        console.log("[ResetPassword] Password recovery token valid!");
+        setTokenValid(true);
+        setIsValidatingToken(false);
+        isValidatingRef.current = false;
+      } else if (event === "SIGNED_IN" && session) {
+        // Sometimes Supabase emits SIGNED_IN instead of PASSWORD_RECOVERY
+        console.log("[ResetPassword] User signed in (could be recovery)");
+        setTokenValid(true);
+        setIsValidatingToken(false);
+        isValidatingRef.current = false;
+      } else if (event === "INITIAL_SESSION" && session) {
+        // Initial session exists
+        console.log("[ResetPassword] Initial session found");
+        setTokenValid(true);
+        setIsValidatingToken(false);
+        isValidatingRef.current = false;
       }
-    );
+    });
 
     // Also check current session immediately (in case URL was already processed)
     supabaseClient.auth.getSession().then(({ data: { session }, error }) => {

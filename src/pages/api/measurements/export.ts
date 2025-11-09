@@ -67,7 +67,7 @@ export const GET: APIRoute = async ({ locals }) => {
  * Generates CSV content from measurements data
  */
 function generateCSV(
-  measurements: Array<{
+  measurements: {
     id: string;
     sys: number;
     dia: number;
@@ -77,7 +77,7 @@ function generateCSV(
     notes: string | null;
     created_at: string;
     updated_at: string;
-  }>
+  }[]
 ): string {
   // CSV Header (Polish labels)
   const header = ["Data i czas pomiaru", "SYS (mmHg)", "DIA (mmHg)", "Tętno (bpm)", "Poziom ciśnienia", "Notatki"].join(

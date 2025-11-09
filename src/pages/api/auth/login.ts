@@ -84,10 +84,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Handle authentication errors from Supabase
     if (error instanceof Error) {
       // Check for specific Supabase error messages
-      if (
-        error.message.includes("Invalid login credentials") ||
-        error.message.includes("Invalid credentials")
-      ) {
+      if (error.message.includes("Invalid login credentials") || error.message.includes("Invalid credentials")) {
         return new Response(
           JSON.stringify({
             error: "InvalidCredentials",
@@ -116,4 +113,3 @@ export const POST: APIRoute = async ({ request, locals }) => {
     );
   }
 };
-
