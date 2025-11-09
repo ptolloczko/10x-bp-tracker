@@ -1,5 +1,29 @@
 # Specyfikacja Techniczna: Moduł Autentykacji BP Tracker
 
+## UWAGI DOTYCZĄCE SPRZECZNOŚCI W PRD
+
+### Sprzeczność 1: Reset hasła
+
+**PRD linie 19 i 40:** "bez resetu hasła w MVP", "Brak resetu hasła; użytkownik musi pamiętać swoje hasło"
+**PRD linia 65:** "Odzyskiwanie hasła powinno być możliwe"
+
+**ROZWIĄZANIE:** Linia 65 jest późniejszą korektą wymagań. Implementujemy pełną funkcjonalność resetu hasła zgodnie z linią 65.
+
+### Sprzeczność 2: Przekierowanie po logowaniu
+
+**PRD US-002:** "przekierowuje na stronę główną"
+
+**ROZWIĄZANIE:** Dla użytkownika zalogowanego, stroną główną jest `/measurements` - to najbardziej użyteczny punkt wejścia do aplikacji.
+
+### Wyjaśnienie: Flow po rejestracji
+
+**PRD US-001:** "Po poprawnym wypełnieniu tworzony jest profil użytkownika"
+**PRD US-010:** "Jako użytkownik chcę uzupełnić dane profilu"
+
+**ROZWIĄZANIE:** Profil tworzony jest automatycznie z pustymi polami opcjonalnymi. Użytkownik jest przekierowywany na `/measurements` i może **później** uzupełnić profil w `/profile` (zgodnie z US-010 - "uzupełnić" sugeruje opcjonalność).
+
+---
+
 ## 1. ARCHITEKTURA INTERFEJSU UŻYTKOWNIKA
 
 ### 1.1. Strony Astro (Server-Side)
@@ -410,9 +434,9 @@ z.object({
 7. Loader podczas przetwarzania
 8. System tworzy konto w Supabase Auth
 9. System automatycznie loguje użytkownika
-10. System tworzy profil użytkownika (POST /api/profile) z domyślnymi wartościami
-11. Użytkownik po rejestracji przekierowywany na `/profile` w celu uzupełnienia profilu
-12. Po zapisie profilu Użytkownik jest przekierowany na `/measurements` tylko w przypadku jezeli to było po rejestracji
+10. System tworzy profil użytkownika (POST /api/profile) z domyślnymi wartościami (wszystkie pola opcjonalne puste)
+11. Użytkownik jest przekierowany na `/measurements`
+12. Użytkownik może później uzupełnić dane profilu w `/profile` (US-010)
 
 **Alternatywa: Email już istnieje**
 
@@ -428,7 +452,7 @@ z.object({
 5. Klika "Zaloguj się"
 6. Loader podczas przetwarzania
 7. System weryfikuje dane przez Supabase Auth
-8. Użytkownik jest przekierowany na `/measurements`
+8. Użytkownik jest przekierowany na `/measurements` (główna strona aplikacji)
 
 **Alternatywa: Nieprawidłowe dane**
 
@@ -1780,13 +1804,14 @@ ON DELETE CASCADE;
 **US-001 (Rejestracja):** ✅
 
 - Formularz z email i hasłem
-- Automatyczne utworzenie profilu
+- Automatyczne utworzenie profilu z domyślnymi (pustymi) wartościami
 - Auto-login po rejestracji
+- Przekierowanie na `/measurements`
 
 **US-002 (Logowanie):** ✅
 
 - Formularz logowania
-- Przekierowanie na stronę główną
+- Przekierowanie na `/measurements` (główna strona aplikacji)
 - Obsługa błędów
 
 **US-011 (Bezpieczny dostęp):** ✅
@@ -1795,11 +1820,12 @@ ON DELETE CASCADE;
 - Przekierowanie niezalogowanych na `/login`
 - Przyciski login/logout w nawigacji
 
-**Odzyskiwanie hasła (linia 64 PRD):** ✅
+**Odzyskiwanie hasła (linia 65 PRD):** ✅
 
 - Pełny flow forgot-password → email → reset-password
 - Link w emailu z tokenem
 - Ustawienie nowego hasła
+- **Uwaga:** PRD w liniach 19 i 40 wspomina "bez resetu hasła w MVP", ale linia 65 wyraźnie stwierdza "Odzyskiwanie hasła powinno być możliwe" - implementujemy zgodnie z linią 65
 
 ### 5.5. Kompatybilność z Istniejącym Kodem
 
