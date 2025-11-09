@@ -22,14 +22,15 @@ Integracja funkcji logowania z backendem Astro i Supabase Auth została zakończ
 
 ### 3. **API Client** (`src/lib/api/auth.client.ts`)
 - `AuthApiClient.login()` - client-side wrapper dla endpoint logowania
+- `AuthApiClient.logout()` - client-side wrapper dla endpoint wylogowania
 - Eksportowany singleton `authApiClient` do użycia w komponentach React
 
-### 4. **API Endpoint** (`src/pages/api/auth/login.ts`)
-- POST `/api/auth/login`
-- Walidacja requestu (Zod)
-- Wywołanie AuthService
-- Obsługa błędów (401, 400, 500)
-- Zwrócenie user + session
+### 4. **API Endpoints**
+- **`src/pages/api/auth/login.ts`** - POST endpoint logowania + ustawianie cookies
+- **`src/pages/api/auth/logout.ts`** - POST endpoint wylogowania + czyszczenie cookies
+
+### 5. **Komponenty React**
+- **`src/components/LogoutButton.tsx`** - Przycisk wylogowania z obsługą stanu loading
 
 ## 🔧 Zaktualizowane Pliki
 
@@ -60,13 +61,19 @@ Integracja funkcji logowania z backendem Astro i Supabase Auth została zakończ
 - Przekierowanie na `/measurements` po sukcesie
 - Wyświetlanie błędów użytkownikowi
 
-### 5. **Strona Logowania** (`src/pages/login.astro`)
-- Dodano sprawdzenie `Astro.locals.user`
-- Jeśli użytkownik już zalogowany → redirect na `/measurements`
+### 5. **Strony Astro**
+- **`src/pages/login.astro`** - Dodano sprawdzenie czy już zalogowany → redirect na `/measurements`
+- **`src/pages/measurements.astro`** - Dodano sprawdzenie autentykacji → redirect na `/login`
+- **`src/pages/profile.astro`** - Dodano sprawdzenie autentykacji → redirect na `/login`
+- **`src/pages/index.astro`** - Przekierowanie: zalogowany → `/measurements`, niezalogowany → `/login`
 
-### 6. **Strona Pomiarów** (`src/pages/measurements.astro`)
-- Dodano sprawdzenie `Astro.locals.user`
-- Jeśli użytkownik NIE zalogowany → redirect na `/login`
+### 6. **Layout** (`src/layouts/Layout.astro`)
+- ✨ **NOWE**: Dodano header z nawigacją
+- Weryfikacja stanu użytkownika (`Astro.locals.user`)
+- Warunkowe wyświetlanie:
+  - Dla zalogowanych: linki "Pomiary", "Profil" + przycisk "Wyloguj się"
+  - Dla niezalogowanych: link "Zaloguj się"
+- Użycie `client:load` dla LogoutButton (React)
 
 ## 🔐 Strategia Cookies
 
@@ -214,10 +221,15 @@ Aby ukończyć moduł autentykacji, należy zaimplementować:
 - [x] Auth Service (`src/lib/services/auth.service.ts`)
 - [x] Auth API Client (`src/lib/api/auth.client.ts`)
 - [x] Login Endpoint (`src/pages/api/auth/login.ts`)
+- [x] **Logout Endpoint (`src/pages/api/auth/logout.ts`)**
 - [x] Middleware z obsługą cookies
 - [x] LoginView integracja
+- [x] **LogoutButton komponent**
 - [x] Ochrona `/login` dla zalogowanych
 - [x] Ochrona `/measurements` dla niezalogowanych
+- [x] Ochrona `/profile` dla niezalogowanych
+- [x] **Przekierowanie w `index.astro`**
+- [x] **Layout z nawigacją i weryfikacją użytkownika**
 - [x] Brak błędów lintera
 - [ ] Testy manualne
 - [ ] Testy automatyczne (opcjonalnie)
@@ -225,5 +237,6 @@ Aby ukończyć moduł autentykacji, należy zaimplementować:
 ---
 
 **Implementacja zakończona**: 2025-11-09
+**Ostatnia aktualizacja**: 2025-11-09 (dodano wylogowanie i nawigację)
 **Status**: ✅ Gotowe do testowania
 
