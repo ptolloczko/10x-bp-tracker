@@ -1,10 +1,11 @@
 // src/components/views/ForgotPasswordView.tsx
 import { useState } from "react";
 import { ForgotPasswordForm, type ForgotPasswordFormInput } from "@/components/forms/ForgotPasswordForm";
+import { authApiClient } from "@/lib/api/auth.client";
 
 /**
  * Forgot password view component
- * Handles the forgot password form display and state management
+ * Handles the password reset request form
  */
 export default function ForgotPasswordView() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -14,17 +15,12 @@ export default function ForgotPasswordView() {
   const handleSubmit = async (data: ForgotPasswordFormInput) => {
     setIsSubmitting(true);
     setError(undefined);
-    setSuccess(false);
 
     try {
-      // TODO: Implement auth API call here
-      // For now, just simulate a delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // eslint-disable-next-line no-console
-      console.log("Forgot password data:", data);
-      
-      // In the future, this will call AuthApiClient.sendPasswordResetEmail()
+      // Call the forgot password API endpoint
+      await authApiClient.sendPasswordResetEmail(data);
+
+      // Show success message
       setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Nie udało się wysłać emaila");
@@ -33,6 +29,44 @@ export default function ForgotPasswordView() {
     }
   };
 
+  if (success) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-4">
+        <div className="w-full max-w-md">
+          {/* Success message */}
+          <div className="rounded-lg border bg-card p-6 shadow-sm">
+            <div className="mb-4 flex justify-center">
+              <div className="rounded-full bg-green-100 p-3">
+                <svg
+                  className="h-6 w-6 text-green-600"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+            </div>
+            <h2 className="mb-2 text-center text-xl font-bold">Email wysłany!</h2>
+            <p className="mb-6 text-center text-sm text-muted-foreground">
+              Jeśli podany adres email istnieje w systemie, wysłaliśmy link do resetowania hasła. Sprawdź swoją skrzynkę
+              pocztową.
+            </p>
+            <a
+              href="/login"
+              className="block w-full rounded-md bg-primary px-4 py-2 text-center text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Wróć do logowania
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md">
@@ -40,68 +74,32 @@ export default function ForgotPasswordView() {
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold tracking-tight">Resetowanie hasła</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Podaj adres email powiązany z Twoim kontem
+            Podaj adres email, a wyślemy Ci link do resetowania hasła
           </p>
         </div>
 
         {/* Form Card */}
         <div className="rounded-lg border bg-card p-6 shadow-sm">
-          {success ? (
-            <div className="space-y-4">
-              <div className="rounded-lg border border-green-500/50 bg-green-500/10 p-4 text-center">
-                <p className="font-medium text-green-600 dark:text-green-400">
-                  Link wysłany!
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Link do resetowania hasła został wysłany na podany adres email. 
-                  Sprawdź swoją skrzynkę pocztową.
-                </p>
+          <ForgotPasswordForm onSubmit={handleSubmit} isSubmitting={isSubmitting} error={error} />
+
+          {/* Additional Links */}
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
               </div>
-              <div className="text-center">
-                <a
-                  href="/login"
-                  className="text-sm text-primary hover:underline"
-                >
-                  Powrót do logowania
-                </a>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Lub</span>
               </div>
             </div>
-          ) : (
-            <>
-              <ForgotPasswordForm onSubmit={handleSubmit} isSubmitting={isSubmitting} error={error} />
-
-              {/* Additional Links */}
-              <div className="mt-6 space-y-4">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2 text-muted-foreground">
-                      lub
-                    </span>
-                  </div>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <a
-                    href="/login"
-                    className="text-primary hover:underline"
-                  >
-                    Powrót do logowania
-                  </a>
-                  <a
-                    href="/register"
-                    className="text-primary hover:underline"
-                  >
-                    Zarejestruj się
-                  </a>
-                </div>
-              </div>
-            </>
-          )}
+            <div className="mt-4 text-center">
+              <a href="/login" className="text-sm text-primary hover:underline">
+                Wróć do logowania
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-

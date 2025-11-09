@@ -3,7 +3,6 @@ import type { APIRoute } from "astro";
 import { z, ZodError } from "zod";
 
 import { ProfileService } from "../../../lib/services/profile.service";
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 
 export const prerender = false;
 
@@ -21,16 +20,25 @@ const ToggleReminderSchema = z.object({
  * POST /api/profile/reminder
  *
  * Toggles email reminders for the user's profile.
- * (Authentication will be implemented later)
+ * Requires authentication.
  *
  * @returns 200 - Reminder toggled successfully
  * @returns 400 - Invalid request body
+ * @returns 401 - Unauthorized
  * @returns 404 - Profile not found
  * @returns 500 - Server error
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // 1. Parse and validate request body
+    // 1. Check authentication
+    if (!locals.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 2. Parse and validate request body
     let body: unknown;
     try {
       body = await request.json();
@@ -43,11 +51,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const validatedData = ToggleReminderSchema.parse(body);
 
-    // 2. Toggle reminder via service using DEFAULT_USER_ID
+    // 3. Toggle reminder via service using authenticated user's ID
     const profileService = new ProfileService(locals.supabase);
-    const profile = await profileService.toggleReminder(DEFAULT_USER_ID, validatedData.enabled);
+    const profile = await profileService.toggleReminder(locals.user.id, validatedData.enabled);
 
-    // 3. Return updated profile
+    // 4. Return updated profile
     return new Response(JSON.stringify(profile), {
       status: 200,
       headers: { "Content-Type": "application/json" },

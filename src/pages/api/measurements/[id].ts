@@ -8,7 +8,6 @@ import {
   MeasurementDuplicateError,
   MeasurementNotFoundError,
 } from "../../../lib/services/measurement.service";
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 import type { MeasurementDTO } from "../../../types";
 
 export const prerender = false;
@@ -18,10 +17,11 @@ export const prerender = false;
  *
  * Updates an existing blood pressure measurement.
  * Re-validates values, re-computes classification, and logs a new interpretation entry.
+ * Requires authentication.
  *
  * @returns 200 - Measurement updated successfully
  * @returns 400 - Invalid request body, validation error, or duplicate timestamp
- * @returns 401 - Unauthorized (not implemented yet)
+ * @returns 401 - Unauthorized
  * @returns 404 - Measurement not found
  * @returns 500 - Server error
  */
@@ -42,7 +42,15 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
       );
     }
 
-    // 1. Parse and validate request body
+    // 1. Check authentication
+    if (!locals.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 2. Parse and validate request body
     let body: unknown;
     try {
       body = await request.json();
@@ -61,11 +69,11 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
 
     const validatedData = UpdateMeasurementSchema.parse(body);
 
-    // 2. Update measurement via service (using DEFAULT_USER_ID for now)
+    // 3. Update measurement via service using authenticated user's ID
     const measurementService = new MeasurementService(locals.supabase);
-    const measurement: MeasurementDTO = await measurementService.update(id, validatedData, DEFAULT_USER_ID);
+    const measurement: MeasurementDTO = await measurementService.update(id, validatedData, locals.user.id);
 
-    // 3. Return updated measurement
+    // 4. Return updated measurement
     return new Response(JSON.stringify(measurement), {
       status: 200,
       headers: { "Content-Type": "application/json" },
@@ -133,9 +141,10 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
  * DELETE /api/measurements/{id}
  *
  * Soft-deletes a measurement (sets deleted=true).
+ * Requires authentication.
  *
  * @returns 204 - Measurement deleted successfully
- * @returns 401 - Unauthorized (not implemented yet)
+ * @returns 401 - Unauthorized
  * @returns 404 - Measurement not found
  * @returns 500 - Server error
  */
@@ -156,11 +165,19 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
       );
     }
 
-    // Delete measurement via service (using DEFAULT_USER_ID for now)
-    const measurementService = new MeasurementService(locals.supabase);
-    await measurementService.delete(id, DEFAULT_USER_ID);
+    // 1. Check authentication
+    if (!locals.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
-    // Return 204 No Content
+    // 2. Delete measurement via service using authenticated user's ID
+    const measurementService = new MeasurementService(locals.supabase);
+    await measurementService.delete(id, locals.user.id);
+
+    // 3. Return 204 No Content
     return new Response(null, {
       status: 204,
     });
@@ -194,4 +211,3 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     );
   }
 };
-

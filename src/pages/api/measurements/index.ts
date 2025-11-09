@@ -4,7 +4,6 @@ import { ZodError } from "zod";
 
 import { CreateMeasurementSchema, GetMeasurementsQuerySchema } from "../../../lib/validators/measurement";
 import { MeasurementService, MeasurementDuplicateError } from "../../../lib/services/measurement.service";
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 import type { MeasurementDTO, MeasurementListResponse } from "../../../types";
 
 export const prerender = false;
@@ -14,26 +13,35 @@ export const prerender = false;
  *
  * Returns a paginated list of blood pressure measurements for the authenticated user.
  * Supports filtering by date range, BP level, and sorting.
+ * Requires authentication.
  *
  * @returns 200 - Paginated list of measurements
  * @returns 400 - Invalid query parameters
- * @returns 401 - Unauthorized (not implemented yet)
+ * @returns 401 - Unauthorized
  * @returns 500 - Server error
  */
 export const GET: APIRoute = async ({ url, locals }) => {
   try {
-    // 1. Parse and validate query parameters
+    // 1. Check authentication
+    if (!locals.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 2. Parse and validate query parameters
     const queryParams = Object.fromEntries(url.searchParams);
     const validatedQuery = GetMeasurementsQuerySchema.parse(queryParams);
 
-    // 2. Fetch measurements via service (using DEFAULT_USER_ID for now)
+    // 3. Fetch measurements via service using authenticated user's ID
     const measurementService = new MeasurementService(locals.supabase);
     const response: MeasurementListResponse = await measurementService.list(
-      DEFAULT_USER_ID,
+      locals.user.id,
       validatedQuery as Parameters<typeof measurementService.list>[1]
     );
 
-    // 3. Return paginated measurements
+    // 4. Return paginated measurements
     return new Response(JSON.stringify(response), {
       status: 200,
       headers: {
@@ -78,15 +86,24 @@ export const GET: APIRoute = async ({ url, locals }) => {
  * Creates a new blood pressure measurement.
  * Validates input, classifies BP according to ESC/ESH 2023 guidelines,
  * stores measurement and creates interpretation log.
+ * Requires authentication.
  *
  * @returns 201 - Measurement created successfully
  * @returns 400 - Invalid request body, validation error, or duplicate timestamp
- * @returns 401 - Unauthorized (not implemented yet)
+ * @returns 401 - Unauthorized
  * @returns 500 - Server error
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // 1. Parse and validate request body
+    // 1. Check authentication
+    if (!locals.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 2. Parse and validate request body
     let body: unknown;
     try {
       body = await request.json();
@@ -105,11 +122,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const validatedData = CreateMeasurementSchema.parse(body);
 
-    // 2. Create measurement via service (using DEFAULT_USER_ID for now)
+    // 3. Create measurement via service using authenticated user's ID
     const measurementService = new MeasurementService(locals.supabase);
-    const measurement: MeasurementDTO = await measurementService.create(validatedData, DEFAULT_USER_ID);
+    const measurement: MeasurementDTO = await measurementService.create(validatedData, locals.user.id);
 
-    // 3. Return created measurement with 201 status
+    // 4. Return created measurement with 201 status
     return new Response(JSON.stringify(measurement), {
       status: 201,
       headers: { "Content-Type": "application/json" },

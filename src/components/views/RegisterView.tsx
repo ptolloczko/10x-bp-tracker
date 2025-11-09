@@ -1,6 +1,7 @@
 // src/components/views/RegisterView.tsx
 import { useState } from "react";
 import { RegisterForm, type RegisterFormInput } from "@/components/forms/RegisterForm";
+import { authApiClient } from "@/lib/api/auth.client";
 
 /**
  * Register view component
@@ -15,18 +16,18 @@ export default function RegisterView() {
     setError(undefined);
 
     try {
-      // TODO: Implement auth API call here
-      // For now, just simulate a delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Call the register API endpoint
+      // This will:
+      // 1. Create user in Supabase Auth
+      // 2. Automatically create profile with default values
+      // 3. Set session cookies
+      await authApiClient.register({
+        email: data.email,
+        password: data.password,
+      });
 
-      // eslint-disable-next-line no-console
-      console.log("Register data:", data);
-
-      // In the future, this will:
-      // 1. Call AuthApiClient.register()
-      // 2. Automatically log the user in
-      // 3. Create profile with default values
-      // 4. Redirect to /measurements
+      // On success, redirect to measurements page
+      window.location.href = "/measurements";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Nie udało się zarejestrować");
     } finally {

@@ -2,7 +2,6 @@
 import type { APIRoute } from "astro";
 
 import { MeasurementService } from "../../../lib/services/measurement.service";
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 
 export const prerender = false;
 
@@ -11,25 +10,34 @@ export const prerender = false;
  *
  * Exports all blood pressure measurements for the authenticated user as CSV.
  * Returns data sorted by measured_at (descending).
+ * Requires authentication.
  *
  * @returns 200 - CSV file with all measurements
- * @returns 401 - Unauthorized (not implemented yet)
+ * @returns 401 - Unauthorized
  * @returns 500 - Server error
  */
 export const GET: APIRoute = async ({ locals }) => {
   try {
-    // Fetch all measurements (no pagination)
+    // 1. Check authentication
+    if (!locals.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 2. Fetch all measurements (no pagination)
     const measurementService = new MeasurementService(locals.supabase);
-    const response = await measurementService.list(DEFAULT_USER_ID, {
+    const response = await measurementService.list(locals.user.id, {
       page: 1,
       page_size: 10000, // Large number to get all measurements
       sort: "desc",
     });
 
-    // Generate CSV content
+    // 3. Generate CSV content
     const csv = generateCSV(response.data);
 
-    // Return CSV file
+    // 4. Return CSV file
     return new Response(csv, {
       status: 200,
       headers: {

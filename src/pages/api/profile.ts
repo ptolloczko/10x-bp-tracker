@@ -4,7 +4,6 @@ import { ZodError } from "zod";
 
 import { CreateProfileInput, UpdateProfileSchema } from "../../lib/validators/profile";
 import { ProfileService, ProfileExistsError } from "../../lib/services/profile.service";
-import { DEFAULT_USER_ID } from "../../db/supabase.client";
 import type { ProfileDTO } from "../../types";
 
 export const prerender = false;
@@ -12,20 +11,29 @@ export const prerender = false;
 /**
  * GET /api/profile
  *
- * Retrieves the user's profile using DEFAULT_USER_ID.
- * (Authentication will be implemented later)
+ * Retrieves the user's profile.
+ * Requires authentication.
  *
  * @returns 200 - Profile data
+ * @returns 401 - Unauthorized
  * @returns 404 - Profile not found
  * @returns 500 - Server error
  */
 export const GET: APIRoute = async ({ locals }) => {
   try {
-    // 1. Fetch profile via service using DEFAULT_USER_ID
-    const profileService = new ProfileService(locals.supabase);
-    const profile = await profileService.getProfile(DEFAULT_USER_ID);
+    // 1. Check authentication
+    if (!locals.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
-    // 2. Handle profile not found
+    // 2. Fetch profile via service using authenticated user's ID
+    const profileService = new ProfileService(locals.supabase);
+    const profile = await profileService.getProfile(locals.user.id);
+
+    // 3. Handle profile not found
     if (!profile) {
       return new Response(JSON.stringify({ error: "ProfileNotFound" }), {
         status: 404,
@@ -33,7 +41,7 @@ export const GET: APIRoute = async ({ locals }) => {
       });
     }
 
-    // 3. Return profile data
+    // 4. Return profile data
     return new Response(JSON.stringify(profile), {
       status: 200,
       headers: {
@@ -57,15 +65,25 @@ export const GET: APIRoute = async ({ locals }) => {
  *
  * Creates a user profile immediately after registration.
  * Can only be called once per account - subsequent attempts return 409.
+ * Requires authentication.
  *
  * @returns 201 - Profile created successfully
  * @returns 400 - Invalid request body
+ * @returns 401 - Unauthorized
  * @returns 409 - Profile already exists
  * @returns 500 - Server error
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // 1. Parse and validate request body
+    // 1. Check authentication
+    if (!locals.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 2. Parse and validate request body
     let body: unknown;
     try {
       body = await request.json();
@@ -78,11 +96,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const validatedData = CreateProfileInput.parse(body);
 
-    // 2. Create profile via service (using DEFAULT_USER_ID for now)
+    // 3. Create profile via service using authenticated user's ID
     const profileService = new ProfileService(locals.supabase);
-    const profile: ProfileDTO = await profileService.createProfile(DEFAULT_USER_ID, validatedData);
+    const profile: ProfileDTO = await profileService.createProfile(locals.user.id, validatedData);
 
-    // 3. Return created profile
+    // 4. Return created profile
     return new Response(JSON.stringify(profile), { status: 201, headers: { "Content-Type": "application/json" } });
   } catch (error) {
     // Handle validation errors from Zod
@@ -118,16 +136,25 @@ export const POST: APIRoute = async ({ request, locals }) => {
  * PUT /api/profile
  *
  * Updates the user's profile with the provided data.
- * (Authentication will be implemented later)
+ * Requires authentication.
  *
  * @returns 200 - Profile updated successfully
  * @returns 400 - Invalid request body
+ * @returns 401 - Unauthorized
  * @returns 404 - Profile not found
  * @returns 500 - Server error
  */
 export const PUT: APIRoute = async ({ request, locals }) => {
   try {
-    // 1. Parse and validate request body
+    // 1. Check authentication
+    if (!locals.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 2. Parse and validate request body
     let body: unknown;
     try {
       body = await request.json();
@@ -140,11 +167,11 @@ export const PUT: APIRoute = async ({ request, locals }) => {
 
     const validatedData = UpdateProfileSchema.parse(body);
 
-    // 2. Update profile via service using DEFAULT_USER_ID
+    // 3. Update profile via service using authenticated user's ID
     const profileService = new ProfileService(locals.supabase);
-    const profile: ProfileDTO = await profileService.updateProfile(DEFAULT_USER_ID, validatedData);
+    const profile: ProfileDTO = await profileService.updateProfile(locals.user.id, validatedData);
 
-    // 3. Return updated profile
+    // 4. Return updated profile
     return new Response(JSON.stringify(profile), {
       status: 200,
       headers: { "Content-Type": "application/json" },

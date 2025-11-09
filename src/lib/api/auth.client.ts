@@ -106,16 +106,30 @@ export class AuthApiClient {
 
   /**
    * Resets user password with a new password
+   * Requires an active recovery session (from email link)
    *
    * @param password - New password
    * @throws {Error} When password reset fails
    */
   async resetPassword(password: string): Promise<void> {
+    // Get current session to include access token
+    const { supabaseClient } = await import("@/db/supabase.client");
+    const {
+      data: { session },
+    } = await supabaseClient.auth.getSession();
+
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    // Include access token if available
+    if (session?.access_token) {
+      headers["Authorization"] = `Bearer ${session.access_token}`;
+    }
+
     const response = await fetch("/api/auth/reset-password", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({ password }),
     });
 
