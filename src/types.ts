@@ -107,6 +107,18 @@ export interface MeasurementListQuery {
   sort?: "asc" | "desc";
 }
 
+/**
+ * View model for measurement form (used with react-hook-form)
+ * Main difference from DTO: measured_at is a Date object for DatePicker compatibility
+ */
+export interface MeasurementFormViewModel {
+  sys: number;
+  dia: number;
+  pulse: number;
+  measured_at: Date;
+  notes?: string;
+}
+
 /* -------------------------------------------------------------------
    Interpretation Logs
 ------------------------------------------------------------------- */
