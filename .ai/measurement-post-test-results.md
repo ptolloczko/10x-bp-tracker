@@ -64,17 +64,18 @@
 
 #### Classification Coverage:
 
-| Category | Tests | Status | Sample Results |
-|----------|-------|--------|----------------|
-| **Optimal** | 3 | ✅ | sys=119/dia=79, sys=110/dia=70, sys=100/dia=60 |
-| **Normal** | 5 | ✅ | sys=120/dia=79, sys=125/dia=82, sys=129/dia=84 |
-| **High Normal** | 5 | ✅ | sys=130/dia=79, sys=135/dia=87, sys=139/dia=89 |
-| **Grade 1** | 5 | ✅ | sys=140/dia=79, sys=150/dia=95, sys=159/dia=99 |
-| **Grade 2** | 5 | ✅ | sys=160/dia=79, sys=170/dia=105, sys=179/dia=109 |
-| **Grade 3** | 5 | ✅ | sys=180/dia=79, sys=190/dia=100, sys=200/dia=115 |
-| **Hypertensive Crisis** | 4 | ✅ | sys=180/dia=120, sys=185/dia=125, sys=200/dia=130 |
+| Category                | Tests | Status | Sample Results                                    |
+| ----------------------- | ----- | ------ | ------------------------------------------------- |
+| **Optimal**             | 3     | ✅     | sys=119/dia=79, sys=110/dia=70, sys=100/dia=60    |
+| **Normal**              | 5     | ✅     | sys=120/dia=79, sys=125/dia=82, sys=129/dia=84    |
+| **High Normal**         | 5     | ✅     | sys=130/dia=79, sys=135/dia=87, sys=139/dia=89    |
+| **Grade 1**             | 5     | ✅     | sys=140/dia=79, sys=150/dia=95, sys=159/dia=99    |
+| **Grade 2**             | 5     | ✅     | sys=160/dia=79, sys=170/dia=105, sys=179/dia=109  |
+| **Grade 3**             | 5     | ✅     | sys=180/dia=79, sys=190/dia=100, sys=200/dia=115  |
+| **Hypertensive Crisis** | 4     | ✅     | sys=180/dia=120, sys=185/dia=125, sys=200/dia=130 |
 
 #### Edge Cases Tested:
+
 - ✅ Boundary values for each category
 - ✅ Systolic-driven classification (high sys, optimal dia)
 - ✅ Diastolic-driven classification (optimal sys, high dia)
@@ -86,6 +87,7 @@
 ## Database Verification
 
 ### Measurements Table
+
 - ✅ Records created successfully
 - ✅ All fields populated correctly
 - ✅ `level` calculated and stored
@@ -93,6 +95,7 @@
 - ✅ User ID association working
 
 ### Interpretation Logs
+
 - ✅ Log entries created for each measurement
 - ✅ Values copied correctly
 - ✅ Classification logged
@@ -102,6 +105,7 @@
 ## Response Validation
 
 ### Successful Creation (201)
+
 ```json
 {
   "id": "uuid",
@@ -115,10 +119,12 @@
   "updated_at": "2025-11-09T15:38:35.096443+00:00"
 }
 ```
+
 ✅ user_id not exposed  
 ✅ deleted flag not exposed
 
 ### Validation Errors (400)
+
 ```json
 {
   "error": "ValidationError",
@@ -130,16 +136,19 @@
   }
 }
 ```
+
 ✅ Clear error messages  
 ✅ Field-level error details
 
 ### Duplicate Errors (400)
+
 ```json
 {
   "error": "MeasurementDuplicate",
   "message": "Measurement already exists for given timestamp"
 }
 ```
+
 ✅ Proper error type  
 ✅ Descriptive message
 
@@ -159,6 +168,7 @@
 ✅ **FULLY COMPLIANT**
 
 All 7 blood pressure categories correctly implemented:
+
 1. Optimal: sys < 120 AND dia < 80
 2. Normal: sys 120-129 OR dia 80-84
 3. High Normal: sys 130-139 OR dia 85-89
@@ -209,4 +219,3 @@ All 7 blood pressure categories correctly implemented:
 **Tested by:** AI Assistant  
 **Reviewed by:** Pending  
 **Sign-off:** Pending
-

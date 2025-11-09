@@ -31,11 +31,10 @@ const mockSupabase = {
 };
 
 describe("MeasurementService", () => {
-  let service: MeasurementService;
-
   beforeEach(() => {
     vi.clearAllMocks();
-    service = new MeasurementService(mockSupabase as any);
+    // Service with mock supabase - instantiated on demand in tests
+    new MeasurementService(mockSupabase as unknown as Parameters<typeof MeasurementService>[0]);
   });
 
   describe("business logic validation", () => {

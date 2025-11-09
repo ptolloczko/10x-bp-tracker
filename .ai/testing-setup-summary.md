@@ -5,6 +5,7 @@
 ### 1. Testy Jednostkowe (Vitest)
 
 **Zainstalowane pakiety:**
+
 - `vitest` - framework do testów jednostkowych
 - `@vitest/ui` - interfejs użytkownika dla Vitest
 - `@testing-library/react` - narzędzia do testowania komponentów React
@@ -14,26 +15,31 @@
 - `jsdom` / `happy-dom` - środowisko DOM dla testów
 
 **Pliki konfiguracyjne:**
+
 - `vitest.config.ts` - główna konfiguracja Vitest
 - `src/test/setup.ts` - setup file z mockami globalnymi (matchMedia, IntersectionObserver)
 - `src/test/tsconfig.json` - konfiguracja TypeScript dla testów
 
 **Przykładowy test:**
+
 - `src/lib/utils/bp-classifier.test.ts` - test jednostkowy klasyfikatora ciśnienia
 
 ### 2. Testy E2E (Playwright)
 
 **Zainstalowane pakiety:**
+
 - `@playwright/test` - framework do testów E2E
 - `playwright` - biblioteka do automatyzacji przeglądarek
 - Chromium (zainstalowany przez npx playwright install)
 
 **Pliki konfiguracyjne:**
+
 - `playwright.config.ts` - konfiguracja Playwright (tylko Chromium zgodnie z wytycznymi)
 - `e2e/fixtures/test.ts` - rozszerzone fixtures dla testów
 - `e2e/page-objects/BasePage.ts` - bazowa klasa Page Object Model
 
 **Przykładowy test:**
+
 - `e2e/home.spec.ts` - test E2E strony głównej
 
 ### 3. Struktura Katalogów
@@ -112,4 +118,3 @@ npm run test:unit:coverage  # Pokrycie kodu
 ---
 
 **Środowisko testowe jest gotowe do użycia! 🚀**
-

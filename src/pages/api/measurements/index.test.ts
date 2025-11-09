@@ -1,5 +1,5 @@
 // src/pages/api/measurements/index.test.ts
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { CreateMeasurementSchema, GetMeasurementsQuerySchema } from "../../../lib/validators/measurement";
 import { MeasurementDuplicateError } from "../../../lib/services/measurement.service";
 

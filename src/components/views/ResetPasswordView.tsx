@@ -20,21 +20,14 @@ export default function ResetPasswordView() {
   // Check if reset token is valid on mount
   useEffect(() => {
     let mounted = true;
-    let timeout: NodeJS.Timeout;
-
-    console.log("[ResetPassword] Component mounted, checking for recovery token...");
-    console.log("[ResetPassword] Current URL:", window.location.href);
-    console.log("[ResetPassword] Hash:", window.location.hash);
 
     // Check for errors in URL (expired/invalid token)
     const urlParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const errorParam = urlParams.get("error") || hashParams.get("error");
     const errorCode = urlParams.get("error_code") || hashParams.get("error_code");
-    const errorDescription = urlParams.get("error_description") || hashParams.get("error_description");
 
     if (errorParam || errorCode) {
-      console.log("[ResetPassword] Error in URL:", { errorParam, errorCode, errorDescription });
       setError("Link resetowania hasła wygasł lub jest nieprawidłowy. Poproś o nowy link.");
       setTokenValid(false);
       setIsValidatingToken(false);
@@ -46,19 +39,10 @@ export default function ResetPasswordView() {
 
     // Check for token/code in URL
     const tokenFromQuery = urlParams.get("code") || urlParams.get("token");
-    const tokenFromHash = hashParams.get("access_token");
-    const type = urlParams.get("type") || hashParams.get("type");
-
-    console.log("[ResetPassword] URL tokens:", {
-      queryToken: tokenFromQuery ? "present" : "none",
-      hashToken: tokenFromHash ? "present" : "none",
-      type: type || "none",
-    });
 
     // If we have a token in URL query params (Supabase Local sends ?code=UUID)
     // We assume it's a recovery token if we're on /reset-password page
     if (tokenFromQuery) {
-      console.log("[ResetPassword] Found token in URL, verifying as recovery token...");
       supabaseClient.auth
         .verifyOtp({
           token_hash: tokenFromQuery,
@@ -67,27 +51,19 @@ export default function ResetPasswordView() {
         .then(({ data, error }) => {
           if (!mounted) return;
 
-          console.log("[ResetPassword] Token verification result:", {
-            hasSession: !!data.session,
-            hasUser: !!data.user,
-            error: error?.message,
-          });
-
           if (error || !data.session) {
             setError("Link resetowania hasła wygasł lub jest nieprawidłowy. Poproś o nowy link.");
             setTokenValid(false);
             setIsValidatingToken(false);
             isValidatingRef.current = false;
           } else {
-            console.log("[ResetPassword] Recovery token verified successfully!");
             setTokenValid(true);
             setIsValidatingToken(false);
             isValidatingRef.current = false;
           }
         })
-        .catch((err) => {
+        .catch(() => {
           if (!mounted) return;
-          console.error("[ResetPassword] Error verifying token:", err);
           setError("Wystąpił błąd podczas weryfikacji linku");
           setTokenValid(false);
           setIsValidatingToken(false);
@@ -103,23 +79,18 @@ export default function ResetPasswordView() {
     const { data: authListener } = supabaseClient.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
 
-      console.log("[ResetPassword] Auth state changed:", event, "Session exists:", !!session);
-
       // PASSWORD_RECOVERY event means token was valid
       if (event === "PASSWORD_RECOVERY" && session) {
-        console.log("[ResetPassword] Password recovery token valid!");
         setTokenValid(true);
         setIsValidatingToken(false);
         isValidatingRef.current = false;
       } else if (event === "SIGNED_IN" && session) {
         // Sometimes Supabase emits SIGNED_IN instead of PASSWORD_RECOVERY
-        console.log("[ResetPassword] User signed in (could be recovery)");
         setTokenValid(true);
         setIsValidatingToken(false);
         isValidatingRef.current = false;
       } else if (event === "INITIAL_SESSION" && session) {
         // Initial session exists
-        console.log("[ResetPassword] Initial session found");
         setTokenValid(true);
         setIsValidatingToken(false);
         isValidatingRef.current = false;
@@ -127,16 +98,10 @@ export default function ResetPasswordView() {
     });
 
     // Also check current session immediately (in case URL was already processed)
-    supabaseClient.auth.getSession().then(({ data: { session }, error }) => {
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return;
 
-      console.log("[ResetPassword] Current session check:", {
-        hasSession: !!session,
-        error: error?.message,
-      });
-
       if (session) {
-        console.log("[ResetPassword] Session found immediately");
         setTokenValid(true);
         setIsValidatingToken(false);
         isValidatingRef.current = false;
@@ -144,13 +109,10 @@ export default function ResetPasswordView() {
     });
 
     // Fallback timeout - if no valid session in 10 seconds, show error
-    timeout = setTimeout(() => {
+    const fallbackTimeout = setTimeout(() => {
       if (!mounted) return;
 
-      console.log("[ResetPassword] Timeout reached, still validating:", isValidatingRef.current);
-
       if (isValidatingRef.current) {
-        console.log("[ResetPassword] No valid session detected after timeout");
         setError("Link resetowania hasła wygasł lub jest nieprawidłowy. Poproś o nowy link.");
         setTokenValid(false);
         setIsValidatingToken(false);
@@ -161,7 +123,7 @@ export default function ResetPasswordView() {
     // Cleanup
     return () => {
       mounted = false;
-      clearTimeout(timeout);
+      clearTimeout(fallbackTimeout);
       authListener.subscription.unsubscribe();
     };
   }, []); // Empty dependency array - only run once on mount
@@ -171,11 +133,9 @@ export default function ResetPasswordView() {
     setError(undefined);
 
     try {
-      console.log("[ResetPassword] Submitting password reset...");
       // Call the reset password API endpoint
       await authApiClient.resetPassword(data.password);
 
-      console.log("[ResetPassword] Password reset successful!");
       // Show success message
       setSuccess(true);
 
@@ -184,7 +144,6 @@ export default function ResetPasswordView() {
         window.location.href = "/login";
       }, 2000);
     } catch (err) {
-      console.error("[ResetPassword] Password reset failed:", err);
       setError(err instanceof Error ? err.message : "Nie udało się zresetować hasła");
     } finally {
       setIsSubmitting(false);
@@ -193,7 +152,6 @@ export default function ResetPasswordView() {
 
   // Loading state while validating token
   if (isValidatingToken) {
-    console.log("[ResetPassword] Rendering: LOADING state");
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="w-full max-w-md">
@@ -210,7 +168,6 @@ export default function ResetPasswordView() {
 
   // Invalid token state
   if (!tokenValid) {
-    console.log("[ResetPassword] Rendering: ERROR state", { error });
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="w-full max-w-md">
@@ -254,7 +211,6 @@ export default function ResetPasswordView() {
 
   // Success state
   if (success) {
-    console.log("[ResetPassword] Rendering: SUCCESS state");
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="w-full max-w-md">
@@ -289,7 +245,6 @@ export default function ResetPasswordView() {
   }
 
   // Form state
-  console.log("[ResetPassword] Rendering: FORM state", { isValidatingToken, tokenValid, success });
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md">

@@ -14,18 +14,26 @@ Object.defineProperty(window, "matchMedia", {
     matches: false,
     media: query,
     onchange: null,
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     addListener: () => {}, // deprecated
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     removeListener: () => {}, // deprecated
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     addEventListener: () => {},
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     removeEventListener: () => {},
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     dispatchEvent: () => {},
   }),
 });
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   observe() {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   disconnect() {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   unobserve() {}
   takeRecords() {
     return [];

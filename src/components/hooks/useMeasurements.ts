@@ -60,7 +60,7 @@ export function useMeasurements(query?: MeasurementListQuery) {
   });
 
   // Mutation for deleting a measurement
-  const deleteMutation = useMutation<void, Error, string>({
+  const deleteMutation = useMutation<undefined, Error, string>({
     mutationFn: (id: string) => measurementApiClient.deleteMeasurement(id),
     onSuccess: () => {
       // Invalidate all measurements queries to refetch

@@ -36,7 +36,10 @@ export function AddMeasurementDialog({ trigger, onSuccess, onSubmit, isSubmittin
       onSuccess();
     } catch (error) {
       // Error is handled by the parent component through toast
-      console.error("Failed to create measurement:", error);
+      // Silently handle - parent component will show toast
+      if (error instanceof Error) {
+        throw error;
+      }
     }
   };
 

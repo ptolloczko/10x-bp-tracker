@@ -1,10 +1,6 @@
 // src/lib/validators/measurement.test.ts
 import { describe, it, expect } from "vitest";
-import {
-  CreateMeasurementSchema,
-  UpdateMeasurementSchema,
-  GetMeasurementsQuerySchema,
-} from "./measurement";
+import { CreateMeasurementSchema, UpdateMeasurementSchema, GetMeasurementsQuerySchema } from "./measurement";
 
 describe("Measurement Validators", () => {
   describe("CreateMeasurementSchema", () => {
@@ -106,9 +102,7 @@ describe("Measurement Validators", () => {
           measured_at: "2024-01-01T10:00:00.000Z",
         };
 
-        expect(() => CreateMeasurementSchema.parse(floatData)).toThrow(
-          "Ciśnienie skurczowe musi być liczbą całkowitą"
-        );
+        expect(() => CreateMeasurementSchema.parse(floatData)).toThrow("Ciśnienie skurczowe musi być liczbą całkowitą");
       });
 
       it("should reject negative values", () => {
@@ -119,9 +113,7 @@ describe("Measurement Validators", () => {
           measured_at: "2024-01-01T10:00:00.000Z",
         };
 
-        expect(() => CreateMeasurementSchema.parse(negativeData)).toThrow(
-          "Ciśnienie skurczowe musi być większe od 0"
-        );
+        expect(() => CreateMeasurementSchema.parse(negativeData)).toThrow("Ciśnienie skurczowe musi być większe od 0");
       });
 
       it("should reject future dates", () => {
@@ -135,9 +127,7 @@ describe("Measurement Validators", () => {
           measured_at: futureDate.toISOString(),
         };
 
-        expect(() => CreateMeasurementSchema.parse(futureData)).toThrow(
-          "Data pomiaru nie może być w przyszłości"
-        );
+        expect(() => CreateMeasurementSchema.parse(futureData)).toThrow("Data pomiaru nie może być w przyszłości");
       });
 
       it("should reject invalid datetime format", () => {
@@ -285,17 +275,13 @@ describe("Measurement Validators", () => {
       it("should reject invalid page values", () => {
         const invalidPageQuery = { page: "0" };
 
-        expect(() => GetMeasurementsQuerySchema.parse(invalidPageQuery)).toThrow(
-          "Numer strony musi być >= 1"
-        );
+        expect(() => GetMeasurementsQuerySchema.parse(invalidPageQuery)).toThrow("Numer strony musi być >= 1");
       });
 
       it("should reject invalid page_size values", () => {
         const invalidSizeQuery = { page_size: "101" };
 
-        expect(() => GetMeasurementsQuerySchema.parse(invalidSizeQuery)).toThrow(
-          "Rozmiar strony nie może być > 100"
-        );
+        expect(() => GetMeasurementsQuerySchema.parse(invalidSizeQuery)).toThrow("Rozmiar strony nie może być > 100");
       });
 
       it("should reject invalid sort values", () => {
@@ -344,9 +330,7 @@ describe("Measurement Validators", () => {
       it("should reject invalid BP levels", () => {
         const invalidLevelQuery = { level: "invalid_level" };
 
-        expect(() => GetMeasurementsQuerySchema.parse(invalidLevelQuery)).toThrow(
-          "Nieprawidłowy poziom ciśnienia"
-        );
+        expect(() => GetMeasurementsQuerySchema.parse(invalidLevelQuery)).toThrow("Nieprawidłowy poziom ciśnienia");
       });
 
       it("should accept all valid BP levels", () => {

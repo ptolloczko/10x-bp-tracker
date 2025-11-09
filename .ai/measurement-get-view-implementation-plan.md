@@ -28,12 +28,12 @@ Brak body requestu.
 
 ## 4. Szczegóły odpowiedzi
 
-| Kod stanu | Scenariusz | Payload |
-|-----------|-----------|---------|
-| 200 | Sukces | `MeasurementListResponse` |
-| 400 | Nieprawidłowe parametry | `{ error: string }` |
-| 401 | Brak/nieprawidłowy JWT | `{ error: "unauthorized" }` |
-| 500 | Błąd serwera | `{ error: string }` |
+| Kod stanu | Scenariusz              | Payload                     |
+| --------- | ----------------------- | --------------------------- |
+| 200       | Sukces                  | `MeasurementListResponse`   |
+| 400       | Nieprawidłowe parametry | `{ error: string }`         |
+| 401       | Brak/nieprawidłowy JWT  | `{ error: "unauthorized" }` |
+| 500       | Błąd serwera            | `{ error: string }`         |
 
 ## 5. Przepływ danych
 
@@ -57,10 +57,10 @@ Brak body requestu.
 
 ## 7. Obsługa błędów
 
-| Sytuacja | Kod | Akcja |
-|----------|-----|-------|
-| Brak JWT lub sesji | 401 | Zwróć `{ error: "unauthorized" }` |
-| Nieprawidłowe parametry | 400 | Zwróć `{ error: zodError }` |
+| Sytuacja                | Kod | Akcja                                                 |
+| ----------------------- | --- | ----------------------------------------------------- |
+| Brak JWT lub sesji      | 401 | Zwróć `{ error: "unauthorized" }`                     |
+| Nieprawidłowe parametry | 400 | Zwróć `{ error: zodError }`                           |
 | Błąd bazy (np. timeout) | 500 | Log do konsoli + `{ error: "internal_server_error" }` |
 
 ## 8. Rozważania dotyczące wydajności
@@ -79,13 +79,13 @@ Brak body requestu.
 3. **Endpoint**
    - [ ] Dodaj `src/pages/api/measurements.ts`:
      ```ts
-     import { z } from 'zod';
-     import { getMeasurementsQuerySchema } from '@/lib/validators/measurement';
-     import { measurementService } from '@/lib/services/measurement.service';
+     import { z } from "zod";
+     import { getMeasurementsQuerySchema } from "@/lib/validators/measurement";
+     import { measurementService } from "@/lib/services/measurement.service";
      export const prerender = false;
      export const GET: APIRoute = async ({ locals, url }) => {
        const { supabase, session } = locals;
-       if (!session) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+       if (!session) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401 });
        const parse = getMeasurementsQuerySchema.safeParse(Object.fromEntries(url.searchParams));
        if (!parse.success) return new Response(JSON.stringify({ error: parse.error.flatten() }), { status: 400 });
        try {
@@ -93,7 +93,7 @@ Brak body requestu.
          return new Response(JSON.stringify(body), { status: 200 });
        } catch (err) {
          console.error(err);
-         return new Response(JSON.stringify({ error: 'internal_server_error' }), { status: 500 });
+         return new Response(JSON.stringify({ error: "internal_server_error" }), { status: 500 });
        }
      };
      ```

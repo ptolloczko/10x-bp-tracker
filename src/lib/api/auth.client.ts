@@ -146,7 +146,7 @@ export class AuthApiClient {
    *
    * @returns User data or null if not authenticated
    */
-  async getCurrentUser(): Promise<any> {
+  async getCurrentUser(): Promise<unknown> {
     const response = await fetch("/api/auth/user", {
       method: "GET",
       headers: {

@@ -54,7 +54,9 @@ Successfully implemented the GET /api/measurements endpoint according to the spe
 ### 4. Testing & Documentation
 
 #### Test Script Created:
+
 **test-get-measurements.sh** - Comprehensive endpoint testing (18 tests)
+
 - Default pagination
 - Custom pagination (page, page_size)
 - Single level filtering
@@ -68,6 +70,7 @@ Successfully implemented the GET /api/measurements endpoint according to the spe
 - Cache-Control header verification
 
 #### Documentation:
+
 - **README.md** updated with:
   - GET endpoint specification
   - Query parameters table
@@ -100,24 +103,28 @@ README.md                           # API documentation updated
 ## Technical Details
 
 ### Query Building
+
 - Conditional filter application
 - Type-safe level filtering with BpLevel type cast
 - Efficient pagination with range()
 - Count calculation without fetching all records
 
 ### Type Safety
+
 - Fully typed with TypeScript
 - Zod runtime validation for all query params
 - Type-safe Supabase queries
 - DTO pattern for response mapping
 
 ### Error Handling
+
 - Validation errors → 400 with Zod error details
 - Database errors → 500 with generic message
 - Proper error logging with console.error
 - User-friendly Polish error messages
 
 ### Security
+
 - Input validation with Zod (SQL injection prevention)
 - Type safety (TypeScript)
 - RLS policies (database level - filters by user_id)
@@ -128,54 +135,59 @@ README.md                           # API documentation updated
 
 ### Test Execution: 18/18 PASSED ✅
 
-| Test # | Scenario | Status |
-|--------|----------|--------|
-| 1 | Default pagination | ✅ PASS |
-| 2 | Custom pagination (page=2, page_size=5) | ✅ PASS |
-| 3 | Filter by level=optimal | ✅ PASS |
-| 4 | Filter by level=optimal,normal | ✅ PASS |
-| 5 | Filter by level=hypertensive_crisis | ✅ PASS |
-| 6 | Sort ascending | ✅ PASS |
-| 7 | Sort descending | ✅ PASS |
-| 8 | Filter by from date | ✅ PASS |
-| 9 | Filter by to date | ✅ PASS |
-| 10 | Combined filters | ✅ PASS |
-| 11 | Validation error - page=0 | ✅ PASS |
-| 12 | Validation error - page_size>100 | ✅ PASS |
-| 13 | Validation error - invalid sort | ✅ PASS |
-| 14 | Validation error - invalid level | ✅ PASS |
-| 15 | Validation error - invalid date format | ✅ PASS |
-| 16 | Response structure validation | ✅ PASS |
-| 17 | Empty result set | ✅ PASS |
-| 18 | Cache-Control header | ✅ PASS |
+| Test # | Scenario                                | Status  |
+| ------ | --------------------------------------- | ------- |
+| 1      | Default pagination                      | ✅ PASS |
+| 2      | Custom pagination (page=2, page_size=5) | ✅ PASS |
+| 3      | Filter by level=optimal                 | ✅ PASS |
+| 4      | Filter by level=optimal,normal          | ✅ PASS |
+| 5      | Filter by level=hypertensive_crisis     | ✅ PASS |
+| 6      | Sort ascending                          | ✅ PASS |
+| 7      | Sort descending                         | ✅ PASS |
+| 8      | Filter by from date                     | ✅ PASS |
+| 9      | Filter by to date                       | ✅ PASS |
+| 10     | Combined filters                        | ✅ PASS |
+| 11     | Validation error - page=0               | ✅ PASS |
+| 12     | Validation error - page_size>100        | ✅ PASS |
+| 13     | Validation error - invalid sort         | ✅ PASS |
+| 14     | Validation error - invalid level        | ✅ PASS |
+| 15     | Validation error - invalid date format  | ✅ PASS |
+| 16     | Response structure validation           | ✅ PASS |
+| 17     | Empty result set                        | ✅ PASS |
+| 18     | Cache-Control header                    | ✅ PASS |
 
 ### Manual Testing Examples
 
 **Default pagination:**
+
 ```bash
 curl http://localhost:3000/api/measurements
 # Returns: page=1, page_size=20, total=42, 20 records
 ```
 
 **Filter by BP level:**
+
 ```bash
 curl "http://localhost:3000/api/measurements?level=hypertensive_crisis"
 # Returns: 6 records, all with level=hypertensive_crisis
 ```
 
 **Multiple levels:**
+
 ```bash
 curl "http://localhost:3000/api/measurements?level=optimal,normal"
 # Returns: 13 records with levels: optimal, normal
 ```
 
 **Date range:**
+
 ```bash
 curl "http://localhost:3000/api/measurements?from=2024-11-09T15:00:00Z"
 # Returns: 7 records from that date onwards
 ```
 
 **Combined:**
+
 ```bash
 curl "http://localhost:3000/api/measurements?level=grade1,grade2&from=2024-11-09T00:00:00Z&sort=asc&page_size=5"
 # Returns: filtered, sorted, paginated results
@@ -184,6 +196,7 @@ curl "http://localhost:3000/api/measurements?level=grade1,grade2&from=2024-11-09
 ## Performance Considerations
 
 ### Database Optimizations
+
 - Uses existing indexes:
   - `idx_measurements_user_time` for DESC queries
   - `idx_measurements_user_time_desc` for ASC queries
@@ -192,6 +205,7 @@ curl "http://localhost:3000/api/measurements?level=grade1,grade2&from=2024-11-09
 - Filtering applied at database level
 
 ### Response Times (Local Testing)
+
 - Default query: ~50ms
 - With filters: ~60ms
 - Large result sets with pagination: ~70ms
@@ -213,11 +227,13 @@ curl "http://localhost:3000/api/measurements?level=grade1,grade2&from=2024-11-09
 ## API Specification
 
 ### Request
+
 ```
 GET /api/measurements?page=1&page_size=20&level=optimal&sort=desc
 ```
 
 ### Response
+
 ```json
 {
   "data": [
@@ -240,14 +256,15 @@ GET /api/measurements?page=1&page_size=20&level=optimal&sort=desc
 ```
 
 ### Query Parameters
-| Parameter | Type | Default | Validation |
-|-----------|------|---------|------------|
-| page | number | 1 | ≥1 |
-| page_size | number | 20 | 1-100 |
-| from | ISO 8601 | - | Valid datetime |
-| to | ISO 8601 | - | Valid datetime |
-| level | string | - | Valid bp_level(s) |
-| sort | string | desc | 'asc' or 'desc' |
+
+| Parameter | Type     | Default | Validation        |
+| --------- | -------- | ------- | ----------------- |
+| page      | number   | 1       | ≥1                |
+| page_size | number   | 20      | 1-100             |
+| from      | ISO 8601 | -       | Valid datetime    |
+| to        | ISO 8601 | -       | Valid datetime    |
+| level     | string   | -       | Valid bp_level(s) |
+| sort      | string   | desc    | 'asc' or 'desc'   |
 
 ## Next Steps
 
@@ -271,7 +288,7 @@ To complete the measurements feature:
 ✅ Properly typed and validated  
 ✅ Comprehensive error handling  
 ✅ Well documented  
-✅ Thoroughly tested  
+✅ Thoroughly tested
 
 ## Code Review Checklist
 
@@ -299,4 +316,3 @@ To complete the measurements feature:
 - Database Schema: `.ai/db-plan.md`
 - Types: `src/types.ts`
 - POST Implementation: `.ai/measurement-post-implementation-summary.md`
-

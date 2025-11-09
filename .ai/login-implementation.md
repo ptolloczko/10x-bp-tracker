@@ -7,12 +7,14 @@ Integracja funkcji logowania z backendem Astro i Supabase Auth została zakończ
 ## 📁 Utworzone Pliki
 
 ### 1. **Walidatory** (`src/lib/validators/auth.ts`)
+
 - `LoginFormSchema` - walidacja formularza logowania (client-side)
 - `LoginRequestSchema` - walidacja API endpoint (server-side)
 - `RegisterFormSchema`, `RegisterRequestSchema` - dla przyszłej rejestracji
 - `ForgotPasswordRequestSchema`, `ResetPasswordRequestSchema` - dla przyszłego resetu hasła
 
 ### 2. **Service** (`src/lib/services/auth.service.ts`)
+
 - `AuthService.login()` - autentykacja przez Supabase Auth
 - `AuthService.register()` - rejestracja użytkownika
 - `AuthService.logout()` - wylogowanie
@@ -21,24 +23,29 @@ Integracja funkcji logowania z backendem Astro i Supabase Auth została zakończ
 - `AuthService.getCurrentUser()` - pobranie aktualnego użytkownika
 
 ### 3. **API Client** (`src/lib/api/auth.client.ts`)
+
 - `AuthApiClient.login()` - client-side wrapper dla endpoint logowania
 - `AuthApiClient.logout()` - client-side wrapper dla endpoint wylogowania
 - Eksportowany singleton `authApiClient` do użycia w komponentach React
 
 ### 4. **API Endpoints**
+
 - **`src/pages/api/auth/login.ts`** - POST endpoint logowania + ustawianie cookies
 - **`src/pages/api/auth/logout.ts`** - POST endpoint wylogowania + czyszczenie cookies
 
 ### 5. **Komponenty React**
+
 - **`src/components/LogoutButton.tsx`** - Przycisk wylogowania z obsługą stanu loading
 
 ## 🔧 Zaktualizowane Pliki
 
 ### 1. **Typy** (`src/types.ts`)
+
 - Dodano import `User`, `Session` z `@supabase/supabase-js`
 - Dodano interfejsy: `AuthResponse`, `LoginRequest`, `RegisterRequest`, `ForgotPasswordRequest`, `ResetPasswordRequest`
 
 ### 2. **Supabase Client** (`src/db/supabase.client.ts`)
+
 - Dodano konfigurację auth:
   - `persistSession: true` - sesja zapisywana w localStorage
   - `autoRefreshToken: true` - automatyczne odświeżanie tokenów
@@ -47,6 +54,7 @@ Integracja funkcji logowania z backendem Astro i Supabase Auth została zakończ
 - Dodano deprecation warning dla `DEFAULT_USER_ID`
 
 ### 3. **Middleware** (`src/middleware/index.ts`)
+
 - **KLUCZOWA ZMIANA**: Middleware teraz obsługuje zarówno Authorization header jak i cookies
 - Flow autentykacji:
   1. Sprawdzenie Authorization header (Bearer token)
@@ -56,18 +64,21 @@ Integracja funkcji logowania z backendem Astro i Supabase Auth została zakończ
   5. Ustawienie `context.locals.user`
 
 ### 4. **LoginView** (`src/components/views/LoginView.tsx`)
+
 - Integracja z `authApiClient`
 - Wywołanie `authApiClient.login(data)`
 - Przekierowanie na `/measurements` po sukcesie
 - Wyświetlanie błędów użytkownikowi
 
 ### 5. **Strony Astro**
+
 - **`src/pages/login.astro`** - Dodano sprawdzenie czy już zalogowany → redirect na `/measurements`
 - **`src/pages/measurements.astro`** - Dodano sprawdzenie autentykacji → redirect na `/login`
 - **`src/pages/profile.astro`** - Dodano sprawdzenie autentykacji → redirect na `/login`
 - **`src/pages/index.astro`** - Przekierowanie: zalogowany → `/measurements`, niezalogowany → `/login`
 
 ### 6. **Layout** (`src/layouts/Layout.astro`)
+
 - ✨ **NOWE**: Dodano header z nawigacją
 - Weryfikacja stanu użytkownika (`Astro.locals.user`)
 - Warunkowe wyświetlanie:
@@ -78,6 +89,7 @@ Integracja funkcji logowania z backendem Astro i Supabase Auth została zakończ
 ## 🔐 Strategia Cookies
 
 **Implementacja hybrydowa:**
+
 - **Client-side**: Supabase automatycznie zarządza cookies w przeglądarce
 - **Server-side**: Middleware odczytuje cookies dla SSR:
   - `sb-access-token` (JWT, krótkotrwały, 1h)
@@ -126,16 +138,19 @@ Integracja funkcji logowania z backendem Astro i Supabase Auth została zakończ
 ## 🎯 Zgodność z Wymaganiami
 
 ### ✅ US-002 (Logowanie)
+
 - Formularz logowania z email i hasłem
 - Przekierowanie na `/measurements` po sukcesie
 - Obsługa błędów ("Nieprawidłowy email lub hasło")
 
 ### ✅ US-011 (Bezpieczny dostęp)
+
 - Strona `/measurements` wymaga autentykacji
 - Przekierowanie na `/login` dla niezalogowanych
 - Middleware weryfikuje sesję dla każdego requesta SSR
 
 ### ✅ PRD (Logowanie i rejestracja)
+
 - Logowanie odbywa się na dedykowanej stronie `/login`
 - Wymaga podania email i hasła
 - Użytkownik NIE MOŻE korzystać z `/measurements` bez logowania
@@ -198,17 +213,20 @@ Aby ukończyć moduł autentykacji, należy zaimplementować:
 ## 📝 Notatki Techniczne
 
 ### Dlaczego nie ustawiamy cookies ręcznie w API endpoint?
+
 - Supabase automatycznie zarządza cookies po stronie klienta
 - API endpoint tylko zwraca `user` + `session` jako JSON
 - Client (browser) automatycznie zapisuje tokeny w localStorage i cookies
 - Middleware odczytuje te cookies dla SSR
 
 ### Dlaczego używamy `window.location.href` zamiast client-side routingu?
+
 - Astro używa SSR, nie SPA routingu
 - Pełne odświeżenie strony zapewnia że middleware odczyta nowe cookies
 - SSR na `/measurements` ma dostęp do `context.locals.user`
 
 ### Dlaczego PKCE flow?
+
 - PKCE (Proof Key for Code Exchange) to dodatkowa warstwa bezpieczeństwa
 - Chroni przed atakami przechwytującymi authorization code
 - Rekomendowane dla wszystkich aplikacji public clients (SPA)
@@ -239,4 +257,3 @@ Aby ukończyć moduł autentykacji, należy zaimplementować:
 **Implementacja zakończona**: 2025-11-09
 **Ostatnia aktualizacja**: 2025-11-09 (dodano wylogowanie i nawigację)
 **Status**: ✅ Gotowe do testowania
-

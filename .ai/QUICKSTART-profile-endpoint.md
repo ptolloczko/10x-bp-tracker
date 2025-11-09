@@ -64,4 +64,3 @@ Lub usuń ręcznie profil testowy z `user_id = "456"`.
 ---
 
 Więcej testów w pliku: `.ai/profile-endpoint-testing.md`
-

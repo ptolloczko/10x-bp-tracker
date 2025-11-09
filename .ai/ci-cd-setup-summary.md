@@ -7,6 +7,7 @@
 Minimalny ale kompletny pipeline CI/CD z następującymi funkcjami:
 
 #### ✅ Triggery
+
 - **Automatyczny**: Push do brancha `master`
 - **Manualny**: `workflow_dispatch` - możliwość uruchomienia z UI GitHub
 
@@ -25,6 +26,7 @@ Minimalny ale kompletny pipeline CI/CD z następującymi funkcjami:
 ```
 
 #### ⚡ Optymalizacje
+
 - ✅ Jobs 1-3 wykonują się **równolegle** (oszczędność ~5-7 min)
 - ✅ **npm cache** dla szybszej instalacji dependencji
 - ✅ **Node.js 22** z `.nvmrc` (automatyczna detekcja wersji)
@@ -34,12 +36,15 @@ Minimalny ale kompletny pipeline CI/CD z następującymi funkcjami:
   - Production build (`dist/`)
 
 #### 🛡️ Error Handling
+
 - ✅ Supabase cleanup nawet przy błędach (`if: always()`)
 - ✅ Conditional build - skip przy fail poprzednich jobs
 - ✅ Summary job zawsze wykonywany (`if: always()`)
 
 #### ⏱️ Czas Wykonania
+
 **~7-10 minut** (total)
+
 - Lint: 1-2 min
 - Unit Tests: 2-3 min (parallel)
 - E2E Tests: 5-7 min (parallel)
@@ -49,7 +54,9 @@ Minimalny ale kompletny pipeline CI/CD z następującymi funkcjami:
 ### 2. Dokumentacja
 
 #### `.ai/ci-cd-documentation.md`
+
 Kompleksowa dokumentacja zawierająca:
+
 - Architektura pipeline
 - Szczegółowy opis każdego job
 - Triggery i konfiguracja
@@ -59,7 +66,9 @@ Kompleksowa dokumentacja zawierająca:
 - Bezpieczeństwo
 
 #### `.ai/ci-cd-quick-reference.md`
+
 Szybki przewodnik z:
+
 - ASCII diagram flow
 - Timeline wykonania
 - Artefakty
@@ -68,7 +77,9 @@ Szybki przewodnik z:
 - Tips & tricks
 
 #### `.ai/ci-cd-badge-setup.md`
+
 Instrukcje konfiguracji:
+
 - Status badge dla README
 - Aktywacja GitHub Actions
 - Branch protection rules
@@ -77,6 +88,7 @@ Instrukcje konfiguracji:
 ### 3. Zmiany w Strukturze
 
 #### ✅ Dodane pliki:
+
 ```
 .github/workflows/master.yml          # Główny CI/CD workflow
 .ai/ci-cd-documentation.md           # Pełna dokumentacja
@@ -86,6 +98,7 @@ Instrukcje konfiguracji:
 ```
 
 #### ❌ Usunięte pliki:
+
 ```
 .github/workflows/build.yml          # Przestarzały, zastąpiony przez master.yml
 ```
@@ -93,6 +106,7 @@ Instrukcje konfiguracji:
 ## 🚀 Jak użyć?
 
 ### Opcja 1: Automatyczny trigger (Push)
+
 ```bash
 git add .
 git commit -m "feat: add CI/CD pipeline"
@@ -100,6 +114,7 @@ git push origin master
 ```
 
 ### Opcja 2: Manual trigger (UI)
+
 1. GitHub → Actions → "CI/CD Pipeline"
 2. Kliknij "Run workflow"
 3. Wybierz branch → "Run workflow"
@@ -107,29 +122,34 @@ git push origin master
 ## 📊 Technologie użyte
 
 ### GitHub Actions
+
 - `actions/checkout@v5` - najnowsza wersja
 - `actions/setup-node@v6` - najnowsza wersja
 - `actions/upload-artifact@v4` - najnowsza wersja
 - `supabase/setup-cli@v1` - dla lokalnej instancji Supabase
 
 ### Narzędzia testowe
+
 - **Vitest** - testy jednostkowe
 - **Playwright** - testy E2E (tylko Chromium)
 - **Supabase CLI** - lokalna baza danych dla E2E
 - **ESLint** - quality checks
 
 ### Build
+
 - **Astro 5** - production build
 - **Node.js 22** - runtime (z `.nvmrc`)
 
 ## ✅ Weryfikacja
 
 ### Składnia YAML
+
 ```bash
 ✅ YAML syntax is valid
 ```
 
 ### Weryfikacja akcji
+
 - ✅ `actions/checkout` - v5 (latest major)
 - ✅ `actions/setup-node` - v6 (latest major)
 - ✅ `actions/upload-artifact` - v4 (latest major)
@@ -137,6 +157,7 @@ git push origin master
 - ✅ Wszystkie akcje aktywne (not archived)
 
 ### Zgodność z projektem
+
 - ✅ Node.js 22 z `.nvmrc`
 - ✅ Branch `master` (nie `main`)
 - ✅ npm scripts zgodne z `package.json`:
@@ -159,23 +180,28 @@ https://github.com/ptolloczko/10x-bp-tracker/actions
 ## 📈 Metryki i Monitoring
 
 ### Dashboard
+
 Wszystkie uruchomienia workflow są widoczne w:
+
 - GitHub → Actions → CI/CD Pipeline
 
 ### Artifacts
+
 Dostępne przez 7 dni po każdym uruchomieniu:
+
 1. **playwright-report** - szczegółowy raport E2E testów
 2. **production-build** - gotowy build do wdrożenia
 
 ### Job Summary
+
 Po każdym uruchomieniu dostępne jest podsumowanie:
 
-| Job | Status |
-|-----|--------|
-| Lint | ✅/❌ |
-| Unit Tests | ✅/❌ |
-| E2E Tests | ✅/❌ |
-| Build | ✅/❌ |
+| Job        | Status |
+| ---------- | ------ |
+| Lint       | ✅/❌  |
+| Unit Tests | ✅/❌  |
+| E2E Tests  | ✅/❌  |
+| Build      | ✅/❌  |
 
 ## 🔒 Bezpieczeństwo
 
@@ -187,40 +213,50 @@ Po każdym uruchomieniu dostępne jest podsumowanie:
 ## 🚧 Następne Kroki (Opcjonalnie)
 
 ### 1. Coverage Reports
+
 Integracja z Codecov/Coveralls dla raportowania pokrycia kodu.
 
 ### 2. Security Scanning
+
 - Dependabot dla security updates
 - Snyk lub OWASP ZAP dla skanowania bezpieczeństwa
 
 ### 3. Performance Testing
+
 - Lighthouse CI dla metryk performance
 - Bundle size monitoring
 
 ### 4. Deployment
+
 - DigitalOcean (zgodnie z tech stack)
 - Lub alternatywnie: Vercel/Netlify
 
 ### 5. Branch Protection
+
 Włączenie wymagania przejścia testów przed merge do mastera.
 
 ## 📚 Dodatkowe Zasoby
 
 ### Dokumentacja GitHub Actions
+
 - https://docs.github.com/en/actions
 
 ### Best Practices
+
 - https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions
 
 ### Playwright CI
+
 - https://playwright.dev/docs/ci
 
 ### Supabase Local Development
+
 - https://supabase.com/docs/guides/cli/local-development
 
 ## 💡 Tips
 
 1. **Local Testing**: Przed push zawsze testuj lokalnie:
+
    ```bash
    npm run lint && npm test && npm run build
    ```
@@ -249,7 +285,6 @@ Włączenie wymagania przejścia testów przed merge do mastera.
 
 ---
 
-*Implementacja: 9 listopada 2025*
-*Wersje akcji zweryfikowane i aktualne*
-*YAML syntax validated*
-
+_Implementacja: 9 listopada 2025_
+_Wersje akcji zweryfikowane i aktualne_
+_YAML syntax validated_

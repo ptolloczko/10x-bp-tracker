@@ -41,6 +41,7 @@ Jeśli Actions nie są włączone:
 ### 3. Uruchom Pierwszy Workflow
 
 #### Opcja A: Push do master
+
 ```bash
 git add .
 git commit -m "Add CI/CD pipeline"
@@ -48,6 +49,7 @@ git push origin master
 ```
 
 #### Opcja B: Manual trigger
+
 1. Idź do: Actions
 2. Wybierz: "CI/CD Pipeline"
 3. Kliknij: "Run workflow"
@@ -57,15 +59,20 @@ git push origin master
 ## Monitorowanie
 
 ### Dashboard
+
 Przejdź do: https://github.com/ptolloczko/10x-bp-tracker/actions
 
 ### Email Notifications
+
 GitHub automatycznie wysyła powiadomienia o:
+
 - ❌ Failed workflows
 - ✅ Workflows fixed po poprzednim fail
 
 ### Status Badge
+
 Badge pokazuje aktualny status pipeline:
+
 - ✅ **passing** - wszystko działa
 - ❌ **failing** - są problemy
 - ⏸️ **no status** - workflow nie był uruchomiony
@@ -88,15 +95,18 @@ To wymusi przechodzenie testów przed merge do mastera.
 ## Troubleshooting
 
 ### Badge pokazuje "no status"
+
 - Workflow nie był jeszcze uruchomiony
 - Uruchom ręcznie lub zrób push
 
 ### Badge pokazuje "failing"
+
 - Sprawdź logi: https://github.com/ptolloczko/10x-bp-tracker/actions
 - Kliknij na failed workflow
 - Zobacz szczegóły błędów
 
 ### Workflow nie startuje
+
 - Sprawdź czy Actions są włączone
 - Sprawdź czy `.github/workflows/master.yml` istnieje
 - Sprawdź czy masz uprawnienia do repo
@@ -104,6 +114,6 @@ To wymusi przechodzenie testów przed merge do mastera.
 ## Dokumentacja
 
 Pełna dokumentacja CI/CD znajduje się w:
+
 - `.ai/ci-cd-documentation.md` - Szczegółowa dokumentacja
 - `.ai/ci-cd-quick-reference.md` - Szybki przewodnik
-

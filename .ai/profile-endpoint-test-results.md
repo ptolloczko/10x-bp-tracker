@@ -8,17 +8,17 @@
 
 ✅ **Wszystkie 9 testów zakończone sukcesem!**
 
-| Test | Scenariusz | Status | Kod HTTP |
-|------|-----------|--------|----------|
-| 1 | Tworzenie profilu z pełnymi danymi | ✅ PASS | 201 |
-| 2 | Brak wymaganego pola timezone | ✅ PASS | 400 |
-| 3 | Nieprawidłowy format daty | ✅ PASS | 400 |
-| 4 | Nieprawidłowy format telefonu | ✅ PASS | 400 |
-| 5 | Nieprawidłowa wartość sex | ✅ PASS | 400 |
-| 6 | Nieprawidłowa waga (ujemna) | ✅ PASS | 400 |
-| 7 | Profil już istnieje | ✅ PASS | 409 |
-| 8 | Nieprawidłowy JSON | ✅ PASS | 400 |
-| 9 | Nadmiarowe pola w request body | ✅ PASS | 400 |
+| Test | Scenariusz                         | Status  | Kod HTTP |
+| ---- | ---------------------------------- | ------- | -------- |
+| 1    | Tworzenie profilu z pełnymi danymi | ✅ PASS | 201      |
+| 2    | Brak wymaganego pola timezone      | ✅ PASS | 400      |
+| 3    | Nieprawidłowy format daty          | ✅ PASS | 400      |
+| 4    | Nieprawidłowy format telefonu      | ✅ PASS | 400      |
+| 5    | Nieprawidłowa wartość sex          | ✅ PASS | 400      |
+| 6    | Nieprawidłowa waga (ujemna)        | ✅ PASS | 400      |
+| 7    | Profil już istnieje                | ✅ PASS | 409      |
+| 8    | Nieprawidłowy JSON                 | ✅ PASS | 400      |
+| 9    | Nadmiarowe pola w request body     | ✅ PASS | 400      |
 
 ---
 
@@ -27,6 +27,7 @@
 ### ✅ Test 1: Tworzenie profilu - sukces (201)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3000/api/profile \
   -H "Content-Type: application/json" \
@@ -42,6 +43,7 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Response:** `201 Created`
+
 ```json
 {
   "user_id": "408128e0-7ece-4062-849e-b94c3e79a96e",
@@ -66,6 +68,7 @@ curl -X POST http://localhost:3000/api/profile \
 ### ✅ Test 2: Brak wymaganego pola timezone (400)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3000/api/profile \
   -H "Content-Type: application/json" \
@@ -76,6 +79,7 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Response:** `400 Bad Request`
+
 ```json
 {
   "error": "ValidationError",
@@ -96,6 +100,7 @@ curl -X POST http://localhost:3000/api/profile \
 ### ✅ Test 3: Nieprawidłowy format daty (400)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3000/api/profile \
   -H "Content-Type: application/json" \
@@ -106,6 +111,7 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Response:** `400 Bad Request`
+
 ```json
 {
   "error": "ValidationError",
@@ -126,6 +132,7 @@ curl -X POST http://localhost:3000/api/profile \
 ### ✅ Test 4: Nieprawidłowy format telefonu (400)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3000/api/profile \
   -H "Content-Type: application/json" \
@@ -136,6 +143,7 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Response:** `400 Bad Request`
+
 ```json
 {
   "error": "ValidationError",
@@ -156,6 +164,7 @@ curl -X POST http://localhost:3000/api/profile \
 ### ✅ Test 5: Nieprawidłowa wartość sex (400)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3000/api/profile \
   -H "Content-Type: application/json" \
@@ -166,15 +175,14 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Response:** `400 Bad Request`
+
 ```json
 {
   "error": "ValidationError",
   "details": {
     "formErrors": [],
     "fieldErrors": {
-      "sex": [
-        "Invalid enum value. Expected 'male' | 'female' | 'other', received 'unknown'"
-      ]
+      "sex": ["Invalid enum value. Expected 'male' | 'female' | 'other', received 'unknown'"]
     }
   }
 }
@@ -188,6 +196,7 @@ curl -X POST http://localhost:3000/api/profile \
 ### ✅ Test 6: Nieprawidłowa waga (400)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3000/api/profile \
   -H "Content-Type: application/json" \
@@ -198,6 +207,7 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Response:** `400 Bad Request`
+
 ```json
 {
   "error": "ValidationError",
@@ -218,6 +228,7 @@ curl -X POST http://localhost:3000/api/profile \
 ### ✅ Test 7: Profil już istnieje (409)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3000/api/profile \
   -H "Content-Type: application/json" \
@@ -227,6 +238,7 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Response:** `409 Conflict`
+
 ```json
 {
   "error": "ProfileExists"
@@ -241,6 +253,7 @@ curl -X POST http://localhost:3000/api/profile \
 ### ✅ Test 8: Nieprawidłowy JSON (400)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3000/api/profile \
   -H "Content-Type: application/json" \
@@ -248,6 +261,7 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Response:** `400 Bad Request`
+
 ```json
 {
   "error": "ValidationError",
@@ -263,6 +277,7 @@ curl -X POST http://localhost:3000/api/profile \
 ### ✅ Test 9: Nadmiarowe pola (400)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3000/api/profile \
   -H "Content-Type: application/json" \
@@ -273,13 +288,12 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Response:** `400 Bad Request`
+
 ```json
 {
   "error": "ValidationError",
   "details": {
-    "formErrors": [
-      "Unrecognized key(s) in object: 'extra_field'"
-    ],
+    "formErrors": ["Unrecognized key(s) in object: 'extra_field'"],
     "fieldErrors": {}
   }
 }
@@ -295,6 +309,7 @@ curl -X POST http://localhost:3000/api/profile \
 ### 1. ❌ Problem: Row Level Security (RLS) blokował INSERT
 
 **Błąd:**
+
 ```
 code: '42501'
 message: 'new row violates row-level security policy for table "profiles"'
@@ -302,6 +317,7 @@ message: 'new row violates row-level security policy for table "profiles"'
 
 **Rozwiązanie:**  
 Zaktualizowano migrację `20241107000000_disable_all_rls_policies.sql` dodając:
+
 ```sql
 alter table profiles disable row level security;
 alter table measurements disable row level security;
@@ -313,6 +329,7 @@ Po wykonaniu `npx supabase db reset --yes` problem został rozwiązany.
 ### 2. ❌ Problem: Foreign Key Constraint - brak user_id w tabeli users
 
 **Błąd:**
+
 ```
 code: '23503'
 message: "insert or update on table \"profiles\" violates foreign key constraint \"profiles_user_id_fkey\""
@@ -343,4 +360,3 @@ Użytkownik zmienił `DEFAULT_USER_ID` w `src/db/supabase.client.ts` na prawidł
 ---
 
 **Endpoint gotowy do użycia w środowisku deweloperskim! 🎉**
-

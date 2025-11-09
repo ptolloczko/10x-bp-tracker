@@ -24,6 +24,7 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Oczekiwany rezultat:**
+
 - Status HTTP: `201`
 - Zwrócony obiekt `ProfileDTO` z wszystkimi polami
 - W bazie danych pojawia się nowy rekord z `user_id = "456"` (DEFAULT_USER_ID)
@@ -40,8 +41,10 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Oczekiwany rezultat:**
+
 - Status HTTP: `400`
 - Odpowiedź:
+
 ```json
 {
   "error": "ValidationError",
@@ -65,6 +68,7 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Oczekiwany rezultat:**
+
 - Status HTTP: `400`
 - Odpowiedź z błędem walidacji dla pola `dob`
 
@@ -80,6 +84,7 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Oczekiwany rezultat:**
+
 - Status HTTP: `400`
 - Odpowiedź z błędem walidacji dla pola `phone` (wymagany format E.164: `+48123456789`)
 
@@ -95,6 +100,7 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Oczekiwany rezultat:**
+
 - Status HTTP: `400`
 - Odpowiedź z błędem walidacji (dozwolone: `"male"`, `"female"`, `"other"`)
 
@@ -110,6 +116,7 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Oczekiwany rezultat:**
+
 - Status HTTP: `400`
 - Odpowiedź z błędem walidacji (weight musi być > 0)
 
@@ -125,8 +132,10 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Oczekiwany rezultat:**
+
 - Status HTTP: `409`
 - Odpowiedź:
+
 ```json
 {
   "error": "ProfileExists"
@@ -142,8 +151,10 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Oczekiwany rezultat:**
+
 - Status HTTP: `400`
 - Odpowiedź:
+
 ```json
 {
   "error": "ValidationError",
@@ -163,6 +174,7 @@ curl -X POST http://localhost:3000/api/profile \
 ```
 
 **Oczekiwany rezultat:**
+
 - Status HTTP: `400`
 - Odpowiedź z błędem walidacji (nierozpoznane pole)
 
@@ -187,4 +199,3 @@ curl -X DELETE "http://127.0.0.1:54321/rest/v1/profiles?user_id=eq.456" \
 - Endpoint obecnie używa `DEFAULT_USER_ID = "456"` dla wszystkich żądań
 - Uwierzytelnienie zostanie dodane w przyszłości
 - Upewnij się, że tabela `profiles` ma odpowiednie RLS policies (lub są wyłączone w środowisku dev)
-

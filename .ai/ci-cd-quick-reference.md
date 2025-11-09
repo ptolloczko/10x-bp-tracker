@@ -3,11 +3,13 @@
 ## 🚀 Jak uruchomić
 
 ### Automatycznie
+
 ```bash
 git push origin master
 ```
 
 ### Ręcznie
+
 1. GitHub → Actions → "CI/CD Pipeline"
 2. Kliknij "Run workflow"
 3. Wybierz branch → "Run workflow"
@@ -63,12 +65,12 @@ git push origin master
 
 ## ⏱️ Timeline
 
-| Minuta | Aktywność |
-|--------|-----------|
-| 0-2    | Lint, Setup (parallel) |
+| Minuta | Aktywność                         |
+| ------ | --------------------------------- |
+| 0-2    | Lint, Setup (parallel)            |
 | 2-7    | Unit Tests + E2E Tests (parallel) |
-| 7-10   | Production Build |
-| 10     | Summary & Done ✅ |
+| 7-10   | Production Build                  |
+| 10     | Summary & Done ✅                 |
 
 **Total: ~7-10 minut**
 
@@ -88,24 +90,28 @@ Po zakończeniu dostępne przez 7 dni:
 ## 🔍 Monitorowanie
 
 ### Status Badge
+
 Dodaj do README.md:
+
 ```markdown
 ![CI/CD Pipeline](https://github.com/{owner}/{repo}/actions/workflows/master.yml/badge.svg)
 ```
 
 ### Email Notifications
+
 GitHub automatycznie wysyła powiadomienia o:
+
 - ❌ Failed workflows
 - ✅ Fixed workflows (po poprzednim fail)
 
 ## ⚡ Optymalizacje
 
-| Feature | Benefit | Czas oszczędności |
-|---------|---------|------------------|
-| npm cache | Szybsza instalacja | ~30-60s |
-| Parallel jobs | Równoległe testy | ~5-7 min |
-| Chromium only | Szybsze E2E | ~3-5 min |
-| Conditional build | Skip przy fail | Variable |
+| Feature           | Benefit            | Czas oszczędności |
+| ----------------- | ------------------ | ----------------- |
+| npm cache         | Szybsza instalacja | ~30-60s           |
+| Parallel jobs     | Równoległe testy   | ~5-7 min          |
+| Chromium only     | Szybsze E2E        | ~3-5 min          |
+| Conditional build | Skip przy fail     | Variable          |
 
 ## 🛠️ Komendy Lokalne
 
@@ -127,16 +133,19 @@ npm test && npm run build
 ### Pipeline czerwony ❌
 
 1. **Lint failed**
+
    ```bash
    npm run lint:fix
    ```
 
 2. **Unit tests failed**
+
    ```bash
    npm run test:unit:watch
    ```
 
 3. **E2E tests failed**
+
    ```bash
    npm run test:e2e:ui
    # lub
@@ -150,6 +159,7 @@ npm test && npm run build
    ```
 
 ### Supabase issues
+
 ```bash
 # Lokalnie
 npm run supabase:restart
@@ -163,12 +173,12 @@ npm run supabase:restart
 
 Typowe wartości:
 
-| Metric | Target | Actual |
-|--------|--------|--------|
-| Success rate | >95% | TBD |
-| Avg duration | <10min | ~7-10min |
-| Cache hit rate | >80% | TBD |
-| Flaky tests | <2% | TBD |
+| Metric         | Target | Actual   |
+| -------------- | ------ | -------- |
+| Success rate   | >95%   | TBD      |
+| Avg duration   | <10min | ~7-10min |
+| Cache hit rate | >80%   | TBD      |
+| Flaky tests    | <2%    | TBD      |
 
 ## 🔒 Bezpieczeństwo
 
@@ -190,4 +200,3 @@ Typowe wartości:
 - 🔄 Re-run failed jobs zamiast całego workflow
 - 📊 Używaj GitHub Actions Summary dla quick insights
 - 🎯 Monitor Playwright traces dla debugging E2E
-
