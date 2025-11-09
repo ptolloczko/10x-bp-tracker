@@ -85,6 +85,124 @@ $ npm run preview
 | `npm run lint:fix` | Autofix lint issues where possible   |
 | `npm run format`   | Format the codebase with Prettier    |
 
+### Testing Scripts
+
+| Script                                | Purpose                                     |
+| ------------------------------------- | ------------------------------------------- |
+| `./scripts/test-get-profile.sh`       | Test GET /api/profile endpoint              |
+| `./scripts/test-post-measurement.sh`  | Test POST /api/measurements endpoint        |
+| `./scripts/test-bp-classification.sh` | Test BP classification against ESC/ESH 2023 |
+| `./scripts/cleanup-test-profile.sh`   | Clean up test profile data                  |
+
+---
+
+## API Documentation
+
+### POST /api/measurements
+
+Creates a new blood pressure measurement with automatic ESC/ESH 2023 classification.
+
+**Endpoint:** `POST /api/measurements`
+
+**Request Headers:**
+
+- `Content-Type: application/json`
+- `Authorization: Bearer <token>` (authentication to be implemented)
+
+**Request Body:**
+
+```json
+{
+  "sys": 120, // Required: Systolic BP (mmHg), integer > 0
+  "dia": 80, // Required: Diastolic BP (mmHg), integer > 0
+  "pulse": 70, // Required: Heart rate (bpm), integer > 0
+  "measured_at": "2024-11-09T08:30:00Z", // Required: ISO 8601 datetime, not in future
+  "notes": "Morning measurement" // Optional: Max 255 characters
+}
+```
+
+**Business Rules:**
+
+- `sys` must be ≥ `dia` (systolic cannot be less than diastolic)
+- `measured_at` must be unique per user (no duplicate timestamps)
+- `measured_at` cannot be in the future
+
+**Response (201 Created):**
+
+```json
+{
+  "id": "uuid",
+  "sys": 120,
+  "dia": 80,
+  "pulse": 70,
+  "level": "normal",
+  "measured_at": "2024-11-09T08:30:00Z",
+  "notes": "Morning measurement",
+  "created_at": "2024-11-09T08:31:00Z",
+  "updated_at": "2024-11-09T08:31:00Z"
+}
+```
+
+**Classification Levels (ESC/ESH 2023):**
+
+| Level                 | Systolic (mmHg) | Diastolic (mmHg) | Description                               |
+| --------------------- | --------------- | ---------------- | ----------------------------------------- |
+| `optimal`             | < 120           | AND < 80         | Optimal blood pressure                    |
+| `normal`              | 120-129         | OR 80-84         | Normal blood pressure                     |
+| `high_normal`         | 130-139         | OR 85-89         | High-normal blood pressure                |
+| `grade1`              | 140-159         | OR 90-99         | Grade 1 hypertension                      |
+| `grade2`              | 160-179         | OR 100-109       | Grade 2 hypertension                      |
+| `grade3`              | ≥ 180           | OR ≥ 110         | Grade 3 hypertension                      |
+| `hypertensive_crisis` | ≥ 180           | AND ≥ 120        | Hypertensive crisis - seek immediate care |
+
+**Error Responses:**
+
+**400 Bad Request - Validation Error:**
+
+```json
+{
+  "error": "ValidationError",
+  "details": {
+    "fieldErrors": {
+      "sys": ["Ciśnienie skurczowe musi być większe lub równe rozkurczowemu"]
+    }
+  }
+}
+```
+
+**400 Bad Request - Duplicate Timestamp:**
+
+```json
+{
+  "error": "MeasurementDuplicate",
+  "message": "Measurement already exists for given timestamp"
+}
+```
+
+**500 Internal Server Error:**
+
+```json
+{
+  "error": "ServerError",
+  "message": "An unexpected error occurred"
+}
+```
+
+**Example Usage:**
+
+```bash
+# Create a measurement
+curl -X POST http://localhost:3000/api/measurements \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sys": 125,
+    "dia": 82,
+    "pulse": 72,
+    "measured_at": "2024-11-09T08:30:00Z",
+    "notes": "Morning measurement before breakfast"
+  }'
+```
+
 ---
 
 ## Project Scope

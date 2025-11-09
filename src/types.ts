@@ -81,7 +81,9 @@ export type MeasurementDTO = Omit<MeasurementEntity, "user_id" | "deleted">;
 /**
  * Body accepted by POST /api/measurements
  */
-export type CreateMeasurementCommand = Pick<MeasurementEntity, "sys" | "dia" | "pulse" | "measured_at" | "notes">;
+export type CreateMeasurementCommand = Pick<MeasurementEntity, "sys" | "dia" | "pulse" | "measured_at"> & {
+  notes?: string;
+};
 
 /**
  * Body accepted by PUT /api/measurements/{id}
