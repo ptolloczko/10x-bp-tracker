@@ -1,7 +1,7 @@
--- Migration: Disable all RLS policies
--- Purpose: Remove all RLS policies from profiles, measurements, and interpretation_logs tables
+-- Migration: Disable RLS for development
+-- Purpose: Disable RLS entirely on profiles, measurements, and interpretation_logs tables
 -- Tables affected: profiles, measurements, interpretation_logs
--- Note: RLS is still enabled on tables, but all policies are dropped
+-- Note: This is for development only. In production, RLS should be enabled with proper policies.
 
 -- Drop all policies from profiles table
 drop policy if exists profiles_select_authenticated on profiles;
@@ -32,4 +32,9 @@ drop policy if exists logs_update_authenticated on interpretation_logs;
 drop policy if exists logs_update_anon on interpretation_logs;
 drop policy if exists logs_delete_authenticated on interpretation_logs;
 drop policy if exists logs_delete_anon on interpretation_logs;
+
+-- Disable RLS on all tables (development only)
+alter table profiles disable row level security;
+alter table measurements disable row level security;
+alter table interpretation_logs disable row level security;
 
