@@ -15,6 +15,16 @@ e2e/**/*.spec.ts       # E2E test files
 
 ## Running Tests
 
+### Prerequisites for E2E Tests
+
+**IMPORTANT:** E2E tests require a running Supabase instance. The test script will automatically check and start Supabase if needed.
+
+If you prefer to start it manually:
+
+```bash
+npm run supabase:start
+```
+
 ### Unit Tests (Vitest)
 
 ```bash
@@ -33,8 +43,10 @@ npm run test:unit:coverage
 
 ### E2E Tests (Playwright)
 
+**Note:** The E2E test scripts automatically ensure Supabase is running before starting tests.
+
 ```bash
-# Run all E2E tests
+# Run all E2E tests (with Supabase check)
 npm run test:e2e
 
 # Run with UI mode
@@ -46,7 +58,7 @@ npm run test:e2e:headed
 # Debug tests
 npm run test:e2e:debug
 
-# Generate tests with codegen
+# Generate tests with codegen (Supabase must be running)
 npm run test:e2e:codegen
 
 # Show test report
@@ -66,12 +78,13 @@ npm test
 Unit tests use Vitest and React Testing Library. Place test files next to the code they test with `.test.ts` or `.test.tsx` extension.
 
 Example:
-```typescript
-import { describe, it, expect } from 'vitest';
-import { myFunction } from './myFunction';
 
-describe('myFunction', () => {
-  it('should do something', () => {
+```typescript
+import { describe, it, expect } from "vitest";
+import { myFunction } from "./myFunction";
+
+describe("myFunction", () => {
+  it("should do something", () => {
     const result = myFunction();
     expect(result).toBe(expected);
   });
@@ -83,15 +96,16 @@ describe('myFunction', () => {
 E2E tests use Playwright. Follow the Page Object Model pattern for maintainability.
 
 Example:
-```typescript
-import { test, expect } from '../fixtures/test';
-import { MyPage } from '../page-objects/MyPage';
 
-test.describe('Feature Name', () => {
-  test('should do something', async ({ page }) => {
+```typescript
+import { test, expect } from "../fixtures/test";
+import { MyPage } from "../page-objects/MyPage";
+
+test.describe("Feature Name", () => {
+  test("should do something", async ({ page }) => {
     const myPage = new MyPage(page);
-    await myPage.goto('/path');
-    await expect(page.locator('selector')).toBeVisible();
+    await myPage.goto("/path");
+    await expect(page.locator("selector")).toBeVisible();
   });
 });
 ```
@@ -99,6 +113,7 @@ test.describe('Feature Name', () => {
 ## Best Practices
 
 ### Unit Tests
+
 - Follow Arrange-Act-Assert pattern
 - Use descriptive test names
 - Mock external dependencies
@@ -106,6 +121,7 @@ test.describe('Feature Name', () => {
 - Keep tests focused and independent
 
 ### E2E Tests
+
 - Use Page Object Model for maintainability
 - Use data-testid attributes for stable selectors
 - Test user flows, not implementation
@@ -118,4 +134,3 @@ test.describe('Feature Name', () => {
 - `vitest.config.ts` - Vitest configuration
 - `playwright.config.ts` - Playwright configuration
 - `src/test/setup.ts` - Vitest setup file with global mocks
-

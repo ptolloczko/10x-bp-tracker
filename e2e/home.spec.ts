@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures/test";
-import { BasePage } from "../page-objects/BasePage";
+import { test, expect } from "./fixtures/test.js";
+import { BasePage } from "./page-objects/BasePage.js";
 
 /**
  * Example E2E test for home page
