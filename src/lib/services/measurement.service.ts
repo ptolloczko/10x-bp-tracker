@@ -22,6 +22,16 @@ export class MeasurementDuplicateError extends Error {
 }
 
 /**
+ * Custom error thrown when a measurement is not found.
+ */
+export class MeasurementNotFoundError extends Error {
+  constructor(id: string) {
+    super(`Measurement not found: ${id}`);
+    this.name = "MeasurementNotFoundError";
+  }
+}
+
+/**
  * Service for managing blood pressure measurements.
  */
 export class MeasurementService {
@@ -164,5 +174,142 @@ export class MeasurementService {
       page_size: pageSize,
       total: count ?? 0,
     };
+  }
+
+  /**
+   * Updates an existing measurement for the given user.
+   *
+   * Process:
+   * 1. Fetches the existing measurement
+   * 2. Merges with update data
+   * 3. Re-classifies BP if sys/dia changed
+   * 4. Updates measurement record
+   * 5. Creates new interpretation log entry
+   * 6. Returns the updated measurement
+   *
+   * @param id - Measurement ID
+   * @param data - Partial measurement data to update
+   * @param userId - The authenticated user's ID
+   * @returns The updated measurement
+   * @throws {MeasurementNotFoundError} If measurement not found
+   * @throws {MeasurementDuplicateError} If measured_at conflicts with another measurement
+   * @throws {Error} For other database errors
+   */
+  async update(id: string, data: Partial<CreateMeasurementCommand>, userId: string): Promise<MeasurementDTO> {
+    // Step 1: Fetch existing measurement
+    const { data: existing, error: fetchError } = await this.supabase
+      .from("measurements")
+      .select("*")
+      .eq("id", id)
+      .eq("user_id", userId)
+      .eq("deleted", false)
+      .single();
+
+    if (fetchError || !existing) {
+      if (fetchError?.code === "PGRST116") {
+        throw new MeasurementNotFoundError(id);
+      }
+      // eslint-disable-next-line no-console
+      console.error("[MeasurementService] Error fetching measurement:", fetchError);
+      throw new Error("Failed to fetch measurement");
+    }
+
+    // Step 2: Merge data
+    const updatedData = {
+      sys: data.sys ?? existing.sys,
+      dia: data.dia ?? existing.dia,
+      pulse: data.pulse ?? existing.pulse,
+      measured_at: data.measured_at ?? existing.measured_at,
+      notes: data.notes !== undefined ? data.notes : existing.notes,
+    };
+
+    // Step 3: Re-classify if BP changed
+    const level = classify(updatedData.sys, updatedData.dia);
+
+    // Step 4: Update measurement
+    const { data: updated, error: updateError } = await this.supabase
+      .from("measurements")
+      .update({
+        ...updatedData,
+        level,
+      })
+      .eq("id", id)
+      .eq("user_id", userId)
+      .select()
+      .single();
+
+    if (updateError) {
+      // Handle unique constraint violation (duplicate measured_at for user)
+      if (updateError.code === "23505") {
+        throw new MeasurementDuplicateError(updatedData.measured_at);
+      }
+
+      // eslint-disable-next-line no-console
+      console.error("[MeasurementService] Error updating measurement:", updateError);
+      throw new Error("Failed to update measurement");
+    }
+
+    // Step 5: Create new interpretation log entry
+    const { error: logError } = await this.supabase.from("interpretation_logs").insert({
+      user_id: userId,
+      measurement_id: id,
+      sys: updatedData.sys,
+      dia: updatedData.dia,
+      pulse: updatedData.pulse,
+      level,
+      notes: updatedData.notes ?? null,
+    });
+
+    if (logError) {
+      // eslint-disable-next-line no-console
+      console.error("[MeasurementService] Error creating interpretation log:", logError);
+      // Non-critical error - we still return the measurement
+    }
+
+    // Step 6: Map to DTO
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { user_id, deleted, ...measurementDTO } = updated;
+
+    return measurementDTO;
+  }
+
+  /**
+   * Soft-deletes a measurement (sets deleted=true).
+   *
+   * @param id - Measurement ID
+   * @param userId - The authenticated user's ID
+   * @throws {MeasurementNotFoundError} If measurement not found
+   * @throws {Error} For database errors
+   */
+  async delete(id: string, userId: string): Promise<void> {
+    // First check if measurement exists and is not already deleted
+    const { data: existing, error: fetchError } = await this.supabase
+      .from("measurements")
+      .select("id, deleted")
+      .eq("id", id)
+      .eq("user_id", userId)
+      .single();
+
+    if (fetchError || !existing) {
+      throw new MeasurementNotFoundError(id);
+    }
+
+    // If already deleted, throw error (not idempotent)
+    if (existing.deleted) {
+      throw new MeasurementNotFoundError(id);
+    }
+
+    // Perform soft delete
+    const { error } = await this.supabase
+      .from("measurements")
+      .update({ deleted: true })
+      .eq("id", id)
+      .eq("user_id", userId);
+
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("[MeasurementService] Error deleting measurement:", error);
+      throw new Error("Failed to delete measurement");
+    }
   }
 }

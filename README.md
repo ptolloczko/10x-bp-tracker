@@ -87,13 +87,15 @@ $ npm run preview
 
 ### Testing Scripts
 
-| Script                                | Purpose                                     |
-| ------------------------------------- | ------------------------------------------- |
-| `./scripts/test-get-profile.sh`       | Test GET /api/profile endpoint              |
-| `./scripts/test-post-measurement.sh`  | Test POST /api/measurements endpoint        |
-| `./scripts/test-get-measurements.sh`  | Test GET /api/measurements endpoint         |
-| `./scripts/test-bp-classification.sh` | Test BP classification against ESC/ESH 2023 |
-| `./scripts/cleanup-test-profile.sh`   | Clean up test profile data                  |
+| Script                                 | Purpose                                     |
+| -------------------------------------- | ------------------------------------------- |
+| `./scripts/test-get-profile.sh`        | Test GET /api/profile endpoint              |
+| `./scripts/test-post-measurement.sh`   | Test POST /api/measurements endpoint        |
+| `./scripts/test-get-measurements.sh`   | Test GET /api/measurements endpoint         |
+| `./scripts/test-put-measurement.sh`    | Test PUT /api/measurements/{id} endpoint    |
+| `./scripts/test-delete-measurement.sh` | Test DELETE /api/measurements/{id} endpoint |
+| `./scripts/test-bp-classification.sh`  | Test BP classification against ESC/ESH 2023 |
+| `./scripts/cleanup-test-profile.sh`    | Clean up test profile data                  |
 
 ---
 
@@ -187,6 +189,173 @@ curl "http://localhost:3000/api/measurements?sort=asc"
 # Combined filters
 curl "http://localhost:3000/api/measurements?level=grade1,grade2&from=2024-11-01T00:00:00Z&sort=asc&page_size=5"
 ```
+
+---
+
+### PUT /api/measurements/{id}
+
+Updates an existing blood pressure measurement. Re-validates values, re-computes classification, and logs a new interpretation entry.
+
+**Endpoint:** `PUT /api/measurements/{id}`
+
+**Request Headers:**
+
+- `Content-Type: application/json`
+- `Authorization: Bearer <token>` (authentication to be implemented)
+
+**Request Body (all fields optional - partial update):**
+
+```json
+{
+  "sys": 135, // Optional: Systolic BP (mmHg), integer > 0
+  "dia": 90, // Optional: Diastolic BP (mmHg), integer > 0
+  "pulse": 75, // Optional: Heart rate (bpm), integer > 0
+  "measured_at": "2024-11-09T09:00:00Z", // Optional: ISO 8601 datetime, not in future
+  "notes": "Updated after doctor visit" // Optional: Max 255 characters
+}
+```
+
+**Business Rules:**
+
+- If both `sys` and `dia` are provided in update, `sys` must be ≥ `dia`
+- `measured_at` must be unique per user (no duplicate timestamps)
+- `measured_at` cannot be in the future
+- Empty body `{}` is valid (no changes)
+
+**Response (200 OK):**
+
+```json
+{
+  "id": "uuid",
+  "sys": 135,
+  "dia": 90,
+  "pulse": 75,
+  "level": "grade1",
+  "measured_at": "2024-11-09T09:00:00Z",
+  "notes": "Updated after doctor visit",
+  "created_at": "2024-11-09T08:31:00Z",
+  "updated_at": "2024-11-09T09:05:00Z"
+}
+```
+
+**Error Responses:**
+
+**400 Bad Request - Validation Error:**
+
+```json
+{
+  "error": "ValidationError",
+  "details": {
+    "fieldErrors": {
+      "sys": ["Ciśnienie skurczowe musi być większe lub równe rozkurczowemu"]
+    }
+  }
+}
+```
+
+**400 Bad Request - Duplicate Timestamp:**
+
+```json
+{
+  "error": "MeasurementDuplicate",
+  "message": "Measurement already exists for given timestamp"
+}
+```
+
+**404 Not Found:**
+
+```json
+{
+  "error": "MeasurementNotFound",
+  "message": "Measurement not found"
+}
+```
+
+**500 Internal Server Error:**
+
+```json
+{
+  "error": "ServerError",
+  "message": "An unexpected error occurred"
+}
+```
+
+**Example Usage:**
+
+```bash
+# Update sys value only (reclassification happens automatically)
+curl -X PUT http://localhost:3000/api/measurements/UUID_HERE \
+  -H "Content-Type: application/json" \
+  -d '{"sys": 145}'
+
+# Update multiple fields
+curl -X PUT http://localhost:3000/api/measurements/UUID_HERE \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sys": 135,
+    "dia": 88,
+    "pulse": 76,
+    "notes": "Updated after exercise"
+  }'
+
+# Update only notes
+curl -X PUT http://localhost:3000/api/measurements/UUID_HERE \
+  -H "Content-Type: application/json" \
+  -d '{"notes": "Corrected measurement context"}'
+```
+
+---
+
+### DELETE /api/measurements/{id}
+
+Soft-deletes a measurement (sets `deleted=true`). The measurement is hidden from all list/get operations but remains in the database for audit purposes.
+
+**Endpoint:** `DELETE /api/measurements/{id}`
+
+**Request Headers:**
+
+- `Authorization: Bearer <token>` (authentication to be implemented)
+
+**Response (204 No Content):**
+
+No response body.
+
+**Error Responses:**
+
+**404 Not Found:**
+
+```json
+{
+  "error": "MeasurementNotFound",
+  "message": "Measurement not found"
+}
+```
+
+**500 Internal Server Error:**
+
+```json
+{
+  "error": "ServerError",
+  "message": "An unexpected error occurred"
+}
+```
+
+**Example Usage:**
+
+```bash
+# Delete a measurement
+curl -X DELETE http://localhost:3000/api/measurements/UUID_HERE
+
+# Verify deletion (measurement should not appear in list)
+curl http://localhost:3000/api/measurements
+```
+
+**Note:** Deleted measurements:
+
+- Cannot be retrieved via GET
+- Cannot be updated via PUT
+- Will return 404 if you try to delete again
+- Are permanently excluded from all queries (soft delete)
 
 ---
 

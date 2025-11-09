@@ -66,6 +66,71 @@ export const CreateMeasurementSchema = z
 export type CreateMeasurementInput = z.infer<typeof CreateMeasurementSchema>;
 
 /**
+ * Zod schema for validating PUT /api/measurements/{id} request body.
+ *
+ * All fields are optional (partial update).
+ * Same validation rules as CreateMeasurementSchema.
+ */
+export const UpdateMeasurementSchema = z
+  .object({
+    sys: z
+      .number({
+        invalid_type_error: "Ciśnienie skurczowe musi być liczbą",
+      })
+      .int("Ciśnienie skurczowe musi być liczbą całkowitą")
+      .positive("Ciśnienie skurczowe musi być większe od 0")
+      .max(32767, "Ciśnienie skurczowe jest zbyt duże")
+      .optional(),
+    dia: z
+      .number({
+        invalid_type_error: "Ciśnienie rozkurczowe musi być liczbą",
+      })
+      .int("Ciśnienie rozkurczowe musi być liczbą całkowitą")
+      .positive("Ciśnienie rozkurczowe musi być większe od 0")
+      .max(32767, "Ciśnienie rozkurczowe jest zbyt duże")
+      .optional(),
+    pulse: z
+      .number({
+        invalid_type_error: "Pulsacja musi być liczbą",
+      })
+      .int("Pulsacja musi być liczbą całkowitą")
+      .positive("Pulsacja musi być większa od 0")
+      .max(32767, "Pulsacja jest zbyt duża")
+      .optional(),
+    measured_at: z
+      .string({
+        invalid_type_error: "Data pomiaru musi być tekstem",
+      })
+      .datetime("Data pomiaru musi być w formacie ISO 8601")
+      .refine(
+        (dateStr) => {
+          const measured = new Date(dateStr);
+          const now = new Date();
+          return measured <= now;
+        },
+        { message: "Data pomiaru nie może być w przyszłości" }
+      )
+      .optional(),
+    notes: z.string().max(255, "Notatka nie może być dłuższa niż 255 znaków").optional(),
+  })
+  .strict() // Reject unknown fields
+  .refine(
+    (data) => {
+      // If both sys and dia are provided, validate sys >= dia
+      if (data.sys !== undefined && data.dia !== undefined) {
+        return data.sys >= data.dia;
+      }
+      return true;
+    },
+    {
+      message: "Ciśnienie skurczowe musi być większe lub równe rozkurczowemu",
+      path: ["sys"],
+    }
+  );
+
+export type UpdateMeasurementInput = z.infer<typeof UpdateMeasurementSchema>;
+
+/**
  * Zod schema for validating GET /api/measurements query parameters.
  *
  * Query params:
