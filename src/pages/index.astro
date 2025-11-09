@@ -1,8 +1,12 @@
 ---
-import Welcome from "../components/Welcome.astro";
-import Layout from "../layouts/Layout.astro";
----
+// src/pages/index.astro
+// Redirect to appropriate page based on authentication status
+// If logged in -> /measurements (main app page)
+// If not logged in -> /login
 
-<Layout>
-  <Welcome />
-</Layout>
+if (Astro.locals.user) {
+  return Astro.redirect("/measurements");
+} else {
+  return Astro.redirect("/login");
+}
+---

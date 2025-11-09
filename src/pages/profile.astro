@@ -2,6 +2,12 @@
 // src/pages/profile.astro
 import Layout from "@/layouts/Layout.astro";
 import ProfileView from "@/components/views/ProfileView";
+
+// Check if user is authenticated
+// If not, redirect to login page
+if (!Astro.locals.user) {
+  return Astro.redirect("/login");
+}
 ---
 
 <Layout title="Ustawienia Profilu">

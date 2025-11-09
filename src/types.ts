@@ -1,5 +1,6 @@
 // src/types.ts
 import type { Tables, TablesInsert } from "./db/database.types";
+import type { User, Session } from "@supabase/supabase-js";
 
 /* -------------------------------------------------------------------
    Generic helpers
@@ -132,3 +133,45 @@ export type InterpretationLogDTO = Omit<InterpretationLogEntity, "user_id">;
  * Response returned by log list endpoints.
  */
 export type InterpretationLogListResponse = PaginatedResponse<InterpretationLogDTO>;
+
+/* -------------------------------------------------------------------
+   Authentication
+------------------------------------------------------------------- */
+
+/**
+ * Response from login/register endpoints
+ */
+export interface AuthResponse {
+  user: User;
+  session: Session;
+}
+
+/**
+ * Request body for login endpoint
+ */
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+/**
+ * Request body for register endpoint
+ */
+export interface RegisterRequest {
+  email: string;
+  password: string;
+}
+
+/**
+ * Request body for forgot password endpoint
+ */
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+/**
+ * Request body for reset password endpoint
+ */
+export interface ResetPasswordRequest {
+  password: string;
+}

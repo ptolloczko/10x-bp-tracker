@@ -2,6 +2,11 @@
 // src/pages/login.astro
 import Layout from "@/layouts/Layout.astro";
 import LoginView from "@/components/views/LoginView";
+
+// If user is already logged in, redirect to measurements
+if (Astro.locals.user) {
+  return Astro.redirect("/measurements");
+}
 ---
 
 <Layout title="Logowanie">

@@ -1,6 +1,7 @@
 // src/components/views/LoginView.tsx
 import { useState } from "react";
 import { LoginForm, type LoginFormInput } from "@/components/forms/LoginForm";
+import { authApiClient } from "@/lib/api/auth.client";
 
 /**
  * Login view component
@@ -15,15 +16,11 @@ export default function LoginView() {
     setError(undefined);
 
     try {
-      // TODO: Implement auth API call here
-      // For now, just simulate a delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Call the login API endpoint
+      await authApiClient.login(data);
       
-      // eslint-disable-next-line no-console
-      console.log("Login data:", data);
-      
-      // In the future, this will call AuthApiClient.login()
-      // and redirect to /measurements
+      // On success, redirect to measurements page
+      window.location.href = "/measurements";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Nie udało się zalogować");
     } finally {
@@ -80,4 +77,5 @@ export default function LoginView() {
     </div>
   );
 }
+
 

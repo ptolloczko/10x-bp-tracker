@@ -4,8 +4,10 @@ import Layout from "@/layouts/Layout.astro";
 import MeasurementsView from "@/components/views/MeasurementsView";
 
 // Check if user is authenticated
-// In a production app, this would check for a valid session
-// For now, we'll rely on the middleware to set context.locals.user
+// If not, redirect to login page
+if (!Astro.locals.user) {
+  return Astro.redirect("/login");
+}
 ---
 
 <Layout title="Lista Pomiarów">
