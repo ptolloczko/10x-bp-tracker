@@ -12,6 +12,9 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
 export default defineConfig({
   testDir: "./e2e",
 
+  // Global teardown to clean up test data from Supabase
+  globalTeardown: "./e2e/global-teardown.ts",
+
   // Run tests in files in parallel
   fullyParallel: true,
 
