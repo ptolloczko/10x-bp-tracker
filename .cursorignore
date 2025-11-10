@@ -1,0 +1,12 @@
+.env.test
+.env.production
+.env.development
+.env.local
+.env.keys
+.env.local.keys
+.env.local.production
+.env.local.development
+.env.local.test
+.env.local.production
+.env.local.development
+.env.local.test
