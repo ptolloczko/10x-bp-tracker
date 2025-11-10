@@ -1,4 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
+import dotenv from "dotenv";
+import path from "path";
+
+// Load environment variables from .env.test
+dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
 
 /**
  * Playwright configuration for E2E tests
@@ -22,10 +27,16 @@ export default defineConfig({
   // Reporter to use
   reporter: [["html"], ["list"]],
 
+  // Global timeout for each test
+  timeout: 60000, // 60 seconds per test
+
   // Shared settings for all the projects below
   use: {
     // Base URL to use in actions like `await page.goto('/')`
     baseURL: process.env.BASE_URL || "http://localhost:3000",
+
+    // Configure test id attribute (we use data-test-id with dash)
+    testIdAttribute: "data-test-id",
 
     // Collect trace when retrying the failed test
     trace: "on-first-retry",
@@ -35,6 +46,17 @@ export default defineConfig({
 
     // Video on failure
     video: "retain-on-failure",
+
+    // Navigation timeout
+    navigationTimeout: 30000, // 30 seconds for page loads
+
+    // Action timeout
+    actionTimeout: 15000, // 15 seconds for actions
+  },
+
+  // Expect timeout
+  expect: {
+    timeout: 15000, // 15 seconds for assertions
   },
 
   // Configure projects for major browsers

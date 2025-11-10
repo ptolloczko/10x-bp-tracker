@@ -59,6 +59,7 @@ export function MeasurementForm({ onSubmit, isSubmitting, initialData }: Measure
               <FormControl>
                 <Input
                   type="datetime-local"
+                  data-test-id="measurement-datetime-input"
                   {...field}
                   value={field.value instanceof Date ? toLocalDatetimeString(field.value) : ""}
                   onChange={(e) => {
@@ -88,6 +89,7 @@ export function MeasurementForm({ onSubmit, isSubmitting, initialData }: Measure
                     placeholder="120"
                     min="1"
                     max="300"
+                    data-test-id="measurement-sys-input"
                     {...field}
                     value={field.value || ""}
                     onChange={(e) => {
@@ -115,6 +117,7 @@ export function MeasurementForm({ onSubmit, isSubmitting, initialData }: Measure
                     placeholder="80"
                     min="1"
                     max="200"
+                    data-test-id="measurement-dia-input"
                     {...field}
                     value={field.value || ""}
                     onChange={(e) => {
@@ -142,6 +145,7 @@ export function MeasurementForm({ onSubmit, isSubmitting, initialData }: Measure
                     placeholder="70"
                     min="1"
                     max="250"
+                    data-test-id="measurement-pulse-input"
                     {...field}
                     value={field.value || ""}
                     onChange={(e) => {
@@ -167,6 +171,7 @@ export function MeasurementForm({ onSubmit, isSubmitting, initialData }: Measure
               <FormControl>
                 <Input
                   placeholder="Np. po wysiłku, rano, po lekach..."
+                  data-test-id="measurement-notes-input"
                   {...field}
                   value={field.value || ""}
                   disabled={isSubmitting}
@@ -180,7 +185,7 @@ export function MeasurementForm({ onSubmit, isSubmitting, initialData }: Measure
 
         {/* Submit Button */}
         <div className="flex justify-end gap-2">
-          <Button type="submit" disabled={isSubmitting} className="min-w-[120px]">
+          <Button type="submit" disabled={isSubmitting} className="min-w-[120px]" data-test-id="measurement-submit-button">
             {isSubmitting ? "Zapisywanie..." : "Zapisz pomiar"}
           </Button>
         </div>

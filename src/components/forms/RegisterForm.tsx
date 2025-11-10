@@ -55,7 +55,7 @@ export function RegisterForm({ onSubmit, isSubmitting, error }: RegisterFormProp
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {/* Error message */}
         {error && (
-          <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+          <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive" data-test-id="register-error-message">
             {error}
           </div>
         )}
@@ -71,6 +71,7 @@ export function RegisterForm({ onSubmit, isSubmitting, error }: RegisterFormProp
                 <Input
                   type="email"
                   placeholder="twoj@email.pl"
+                  data-test-id="register-email-input"
                   {...field}
                   disabled={isSubmitting}
                   autoComplete="email"
@@ -92,6 +93,7 @@ export function RegisterForm({ onSubmit, isSubmitting, error }: RegisterFormProp
                 <Input
                   type="password"
                   placeholder="••••••••"
+                  data-test-id="register-password-input"
                   {...field}
                   disabled={isSubmitting}
                   autoComplete="new-password"
@@ -114,6 +116,7 @@ export function RegisterForm({ onSubmit, isSubmitting, error }: RegisterFormProp
                 <Input
                   type="password"
                   placeholder="••••••••"
+                  data-test-id="register-confirm-password-input"
                   {...field}
                   disabled={isSubmitting}
                   autoComplete="new-password"
@@ -125,7 +128,7 @@ export function RegisterForm({ onSubmit, isSubmitting, error }: RegisterFormProp
         />
 
         {/* Submit Button */}
-        <Button type="submit" disabled={isSubmitting} className="w-full">
+        <Button type="submit" disabled={isSubmitting} className="w-full" data-test-id="register-submit-button">
           {isSubmitting ? "Rejestracja..." : "Zarejestruj się"}
         </Button>
       </form>

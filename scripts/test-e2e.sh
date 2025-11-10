@@ -5,6 +5,17 @@
 
 set -e
 
+# Load environment variables from .env.test
+if [ -f ".env.test" ]; then
+  echo "📦 Loading environment variables from .env.test..."
+  set -a
+  source .env.test
+  set +a
+else
+  echo "⚠️  Warning: .env.test file not found. Copy .env.test.example to .env.test"
+  echo "💡 Run: cp .env.test.example .env.test"
+fi
+
 echo "🔍 Checking Supabase status..."
 
 # Check if Supabase is already running

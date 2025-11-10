@@ -43,7 +43,10 @@ export function LoginForm({ onSubmit, isSubmitting, error }: LoginFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {/* Error message */}
         {error && (
-          <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+          <div
+            className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive"
+            data-test-id="login-error-message"
+          >
             {error}
           </div>
         )}
@@ -59,6 +62,7 @@ export function LoginForm({ onSubmit, isSubmitting, error }: LoginFormProps) {
                 <Input
                   type="email"
                   placeholder="twoj@email.pl"
+                  data-test-id="login-email-input"
                   {...field}
                   disabled={isSubmitting}
                   autoComplete="email"
@@ -80,6 +84,7 @@ export function LoginForm({ onSubmit, isSubmitting, error }: LoginFormProps) {
                 <Input
                   type="password"
                   placeholder="••••••••"
+                  data-test-id="login-password-input"
                   {...field}
                   disabled={isSubmitting}
                   autoComplete="current-password"
@@ -91,7 +96,7 @@ export function LoginForm({ onSubmit, isSubmitting, error }: LoginFormProps) {
         />
 
         {/* Submit Button */}
-        <Button type="submit" disabled={isSubmitting} className="w-full">
+        <Button type="submit" disabled={isSubmitting} className="w-full" data-test-id="login-submit-button">
           {isSubmitting ? "Logowanie..." : "Zaloguj się"}
         </Button>
       </form>

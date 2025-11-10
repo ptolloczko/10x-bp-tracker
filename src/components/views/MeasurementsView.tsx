@@ -238,7 +238,7 @@ function MeasurementsViewContent() {
               </Button>
               <AddMeasurementDialog
                 trigger={
-                  <Button>
+                  <Button data-test-id="add-measurement-button">
                     <Plus className="mr-2 h-4 w-4" />
                     Dodaj pomiar
                   </Button>
@@ -257,7 +257,7 @@ function MeasurementsViewContent() {
               <p className="mb-6 text-sm text-muted-foreground">Nie masz jeszcze żadnych pomiarów ciśnienia krwi.</p>
               <AddMeasurementDialog
                 trigger={
-                  <Button>
+                  <Button data-test-id="add-first-measurement-button">
                     <Plus className="mr-2 h-4 w-4" />
                     Dodaj swój pierwszy pomiar
                   </Button>
