@@ -3,10 +3,17 @@
 /**
  * Script to check if .env.test file exists
  * Used before running E2E tests
+ * Skips check in CI environment where env vars are set directly
  */
 
 import { existsSync } from "fs";
 import { resolve } from "path";
+
+// Skip check in CI environment (GitHub Actions, GitLab CI, etc.)
+if (process.env.CI) {
+  console.log("✅ Running in CI environment - skipping .env.test file check");
+  process.exit(0);
+}
 
 const envTestPath = resolve(process.cwd(), ".env.test");
 

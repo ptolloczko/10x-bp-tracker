@@ -62,11 +62,11 @@ jobs:
     needs: lint
     environment: integration
     env:
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
-      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
-      E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+      CI: true
+      BASE_URL: http://localhost:3000
+      PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      PUBLIC_SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -83,8 +83,8 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run E2E tests with coverage
-        run: npm run test:e2e
+      - name: Run E2E tests
+        run: npx playwright test
 
       - name: Upload E2E coverage artifacts
         uses: actions/upload-artifact@v5
