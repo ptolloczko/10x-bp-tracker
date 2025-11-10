@@ -55,7 +55,10 @@ export function RegisterForm({ onSubmit, isSubmitting, error }: RegisterFormProp
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {/* Error message */}
         {error && (
-          <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive" data-test-id="register-error-message">
+          <div
+            className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive"
+            data-test-id="register-error-message"
+          >
             {error}
           </div>
         )}

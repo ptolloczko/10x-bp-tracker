@@ -185,7 +185,12 @@ export function MeasurementForm({ onSubmit, isSubmitting, initialData }: Measure
 
         {/* Submit Button */}
         <div className="flex justify-end gap-2">
-          <Button type="submit" disabled={isSubmitting} className="min-w-[120px]" data-test-id="measurement-submit-button">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="min-w-[120px]"
+            data-test-id="measurement-submit-button"
+          >
             {isSubmitting ? "Zapisywanie..." : "Zapisz pomiar"}
           </Button>
         </div>

@@ -19,4 +19,3 @@ if (!existsSync(envTestPath)) {
 }
 
 console.log("✅ .env.test file found");
-

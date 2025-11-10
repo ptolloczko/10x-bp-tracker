@@ -99,13 +99,7 @@ export class AddMeasurementDialog {
    * Complete the measurement form
    * @param data - Measurement data
    */
-  async fillMeasurement(data: {
-    dateTime?: string;
-    sys: number;
-    dia: number;
-    pulse: number;
-    notes?: string;
-  }) {
+  async fillMeasurement(data: { dateTime?: string; sys: number; dia: number; pulse: number; notes?: string }) {
     // Fill datetime if provided, otherwise use current datetime
     if (data.dateTime) {
       await this.fillDateTime(data.dateTime);
@@ -123,13 +117,7 @@ export class AddMeasurementDialog {
   /**
    * Fill form and submit
    */
-  async addMeasurement(data: {
-    dateTime?: string;
-    sys: number;
-    dia: number;
-    pulse: number;
-    notes?: string;
-  }) {
+  async addMeasurement(data: { dateTime?: string; sys: number; dia: number; pulse: number; notes?: string }) {
     await this.fillMeasurement(data);
     await this.clickSubmit();
   }
@@ -168,4 +156,3 @@ export class AddMeasurementDialog {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 }
-

@@ -7,4 +7,3 @@ export { BasePage } from "./BasePage";
 export { RegisterPage } from "./RegisterPage";
 export { MeasurementsPage } from "./MeasurementsPage";
 export { AddMeasurementDialog } from "./AddMeasurementDialog";
-
