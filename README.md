@@ -2,6 +2,8 @@
 
 A lightweight web application that helps users manually record, interpret and export blood pressure measurements according to the 2023 European Society of Cardiology / European Society of Hypertension (ESC/ESH) guidelines.
 
+**🌐 Production Site:** [https://10x-bp-tracker.pages.dev](https://10x-bp-tracker.pages.dev)
+
 ---
 
 ## Table of Contents
