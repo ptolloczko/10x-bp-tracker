@@ -3,7 +3,6 @@ import type { APIRoute } from "astro";
 import { ZodError } from "zod";
 
 import { ResetPasswordRequestSchema } from "@/lib/validators/auth";
-import { AuthService } from "@/lib/services/auth.service";
 import { isFeatureEnabled } from "@/features/flags";
 
 export const prerender = false;

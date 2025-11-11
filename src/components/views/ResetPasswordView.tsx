@@ -1,7 +1,6 @@
 // src/components/views/ResetPasswordView.tsx
 import { useState, useEffect, useRef } from "react";
 import { ResetPasswordForm, type ResetPasswordFormInput } from "@/components/forms/ResetPasswordForm";
-import { authApiClient } from "@/lib/api/auth.client";
 import { supabaseClient } from "@/db/supabase.client";
 
 /**
