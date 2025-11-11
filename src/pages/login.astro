@@ -2,11 +2,24 @@
 // src/pages/login.astro
 import Layout from "@/layouts/Layout.astro";
 import LoginView from "@/components/views/LoginView";
+import RecoveryRedirect from "@/components/RecoveryRedirect";
 import { isFeatureEnabled } from "@/features/flags";
 
 // Check if auth feature is enabled
 if (!isFeatureEnabled("auth")) {
   return Astro.redirect("/");
+}
+
+// Check if this is a password recovery link (type=recovery in hash/query)
+const url = new URL(Astro.request.url);
+const hashParams = url.hash ? new URLSearchParams(url.hash.substring(1)) : null;
+const queryType = url.searchParams.get("type");
+const hashType = hashParams?.get("type");
+
+if (queryType === "recovery" || hashType === "recovery") {
+  // This is a password recovery link, redirect to reset-password page
+  // Preserve the full URL (with hash containing the token)
+  return Astro.redirect(`/reset-password${url.hash}`);
 }
 
 // If user is already logged in, redirect to measurements
@@ -16,5 +29,6 @@ if (Astro.locals.user) {
 ---
 
 <Layout title="Logowanie">
+  <RecoveryRedirect client:only="react" />
   <LoginView client:load />
 </Layout>

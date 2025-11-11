@@ -10,9 +10,22 @@ import { supabaseClient } from "../db/supabase.client.js";
  * 2. Checks for authentication via Authorization header (for API calls)
  * 3. Checks for authentication via Supabase cookies (for SSR/browser)
  * 4. Sets context.locals.user for authenticated requests
+ * 5. Handles password recovery redirects
  */
 export const onRequest = defineMiddleware(async (context, next) => {
-  // 1. Make Supabase client available in context.locals
+  // 1. Check if this is a password recovery callback and redirect to /reset-password
+  const url = new URL(context.request.url);
+  const hashParams = url.hash ? new URLSearchParams(url.hash.substring(1)) : null;
+  const queryType = url.searchParams.get("type");
+  const hashType = hashParams?.get("type");
+
+  if ((queryType === "recovery" || hashType === "recovery") && url.pathname !== "/reset-password") {
+    // This is a password recovery link, redirect to reset-password page
+    // Preserve the full URL (with hash containing the token)
+    return context.redirect(`/reset-password${url.hash || ""}`);
+  }
+
+  // 2. Make Supabase client available in context.locals
   context.locals.supabase = supabaseClient;
 
   let user = null;
