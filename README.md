@@ -482,18 +482,74 @@ This project is configured to deploy to Cloudflare Pages using GitHub Actions.
 
 ### Required GitHub Secrets
 
-Configure these secrets in your repository settings (`Settings > Secrets and variables > Actions`):
+Secrets should be configured in **two locations**:
 
-| Secret Name               | Description                                                                    |
-| ------------------------- | ------------------------------------------------------------------------------ |
-| `CLOUDFLARE_API_TOKEN`    | API token from Cloudflare with Pages write permissions                         |
-| `CLOUDFLARE_ACCOUNT_ID`   | Your Cloudflare account ID                                                     |
-| `CLOUDFLARE_PROJECT_NAME` | The name of your Cloudflare Pages project                                      |
-| `PUBLIC_SUPABASE_URL`     | Your Supabase project URL (public)                                             |
-| `PUBLIC_SUPABASE_KEY`     | Your Supabase anon key (public)                                                |
-| `SUPABASE_URL`            | Your Supabase project URL (for server-side API)                                |
-| `SUPABASE_KEY`            | Your Supabase service role key (for server-side API with elevated permissions) |
-| `OPENROUTER_API_KEY`      | OpenRouter API key (if using AI features)                                      |
+#### 1. Environment Secrets (for deployment) - `production` environment
+
+Go to: `Settings > Environments > production > Environment secrets`
+
+| Secret Name               | Description                                                                     |
+| ------------------------- | ------------------------------------------------------------------------------- |
+| `CLOUDFLARE_API_TOKEN`    | API token from Cloudflare with Pages write permissions (see instructions below) |
+| `CLOUDFLARE_ACCOUNT_ID`   | Your Cloudflare account ID (found in Cloudflare Dashboard)                      |
+| `CLOUDFLARE_PROJECT_NAME` | The name of your Cloudflare Pages project                                       |
+| `PUBLIC_SUPABASE_URL`     | Your Supabase project URL (public) - used during build                          |
+| `PUBLIC_SUPABASE_KEY`     | Your Supabase anon key (public) - used during build                             |
+
+#### 2. Repository Secrets (for tests)
+
+Go to: `Settings > Secrets and variables > Actions > Repository secrets`
+
+| Secret Name          | Description                                                                    |
+| -------------------- | ------------------------------------------------------------------------------ |
+| `SUPABASE_URL`       | Your Supabase project URL (for server-side API in unit tests)                  |
+| `SUPABASE_KEY`       | Your Supabase service role key (for server-side API with elevated permissions) |
+| `OPENROUTER_API_KEY` | OpenRouter API key (if using AI features in tests)                             |
+
+> **Note**: The `deploy` job uses the `production` environment, so it accesses secrets from there. The `unit-tests` job doesn't use an environment, so it needs repository-level secrets.
+
+#### 🔑 How to Create Cloudflare API Token
+
+The **Authentication Error [code: 10001]** means your API token is missing or invalid. Follow these steps:
+
+1. **Log in to Cloudflare Dashboard**: https://dash.cloudflare.com
+2. **Navigate to API Tokens**:
+   - Click your profile icon (top right)
+   - Select "My Profile"
+   - Click "API Tokens" tab
+3. **Create Token**: Click "Create Token" button
+4. **Configure Permissions** (choose one method):
+
+   **Method A - Use Template (Recommended):**
+   - Find "Edit Cloudflare Workers" template
+   - Click "Use template"
+   - Ensure it includes: **Account → Cloudflare Pages → Edit**
+
+   **Method B - Custom Token:**
+   - Click "Create Custom Token"
+   - Add permission: **Account → Cloudflare Pages → Edit**
+   - (Optional) Add: **Account → Account Settings → Read**
+
+5. **Select Account Resources**:
+   - Choose "All accounts" OR select specific account
+6. **Create and Copy Token**:
+   - Click "Continue to summary"
+   - Click "Create Token"
+   - **⚠️ COPY THE TOKEN IMMEDIATELY** (shown only once!)
+7. **Add to GitHub Secrets**:
+   - Go to your GitHub repo → **Settings** → **Secrets and variables** → **Actions**
+   - Click "New repository secret"
+   - Name: `CLOUDFLARE_API_TOKEN`
+   - Value: paste the copied token
+   - Click "Add secret"
+
+#### 🆔 How to Find Cloudflare Account ID
+
+1. Log in to Cloudflare Dashboard: https://dash.cloudflare.com
+2. Go to **Workers & Pages** (left sidebar)
+3. Find **Account ID** in the right sidebar
+4. Or check the URL: `dash.cloudflare.com/[ACCOUNT_ID]/workers-and-pages`
+5. **Add to GitHub Secrets**: Name: `CLOUDFLARE_ACCOUNT_ID`, Value: your account ID
 
 ### Deployment Workflow
 
@@ -530,6 +586,53 @@ After the first deployment, configure environment variables in Cloudflare Dashbo
    - `PUBLIC_SUPABASE_URL`
    - `PUBLIC_SUPABASE_KEY`
    - `PUBLIC_ENV_NAME` (set to `production`)
+
+### Troubleshooting Deployment Issues
+
+#### ❌ Error: "Unable to authenticate request [code: 10001]"
+
+**Cause**: Invalid or missing Cloudflare API token.
+
+**Solutions**:
+
+1. ✅ Verify `CLOUDFLARE_API_TOKEN` is set in **Environment secrets** for `production`:
+   - Go to: `Settings > Environments > production > Environment secrets`
+   - Ensure `CLOUDFLARE_API_TOKEN` exists and is not empty
+2. ✅ Ensure the token has **Cloudflare Pages - Edit** permission
+3. ✅ Create a new token if the current one expired or is invalid (see instructions above)
+4. ✅ Check that you copied the entire token without extra spaces or newlines
+5. ✅ Verify the environment name in workflow matches: `environment: production`
+
+#### ❌ Error: "Project not found"
+
+**Cause**: The Cloudflare Pages project doesn't exist or the name is incorrect.
+
+**Solutions**:
+
+1. ✅ Create a Pages project in Cloudflare Dashboard first (Workers & Pages → Create → Pages)
+2. ✅ Verify `CLOUDFLARE_PROJECT_NAME` in environment `production` matches exactly (case-sensitive)
+3. ✅ Check `CLOUDFLARE_ACCOUNT_ID` in environment `production` is correct
+4. ✅ Ensure both secrets are set in: `Settings > Environments > production > Environment secrets`
+
+#### ❌ Error: "Account ID mismatch"
+
+**Cause**: The API token belongs to a different account.
+
+**Solutions**:
+
+1. ✅ Verify `CLOUDFLARE_ACCOUNT_ID` in environment `production` matches your account (see instructions above)
+2. ✅ Ensure the `CLOUDFLARE_API_TOKEN` has access to this specific account
+3. ✅ If using multiple Cloudflare accounts, ensure you're using the correct token and account ID pair
+4. ✅ Both must be set in: `Settings > Environments > production > Environment secrets`
+
+#### ❌ Build succeeds but deployment fails
+
+**Solutions**:
+
+1. ✅ Check that `dist/` folder exists after build
+2. ✅ Verify `npm run build` works locally
+3. ✅ Check GitHub Actions logs for specific error messages
+4. ✅ Ensure all required dependencies are in `dependencies` (not just `devDependencies`)
 
 ---
 
