@@ -10,10 +10,12 @@ A lightweight web application that helps users manually record, interpret and ex
 2. [Tech Stack](#tech-stack)
 3. [Getting Started Locally](#getting-started-locally)
 4. [Available Scripts](#available-scripts)
-5. [Project Scope](#project-scope)
-6. [Project Status](#project-status)
-7. [License](#license)
-8. [Deployment & Hosting Analysis](#deployment--hosting-analysis)
+5. [API Documentation](#api-documentation)
+6. [Deployment to Cloudflare Pages](#deployment-to-cloudflare-pages)
+7. [Deployment & Hosting Analysis](#deployment--hosting-analysis)
+8. [Project Scope](#project-scope)
+9. [Project Status](#project-status)
+10. [License](#license)
 
 ---
 
@@ -38,6 +40,7 @@ Key features:
 - **Styling**: Tailwind CSS 4, Shadcn/UI, Lucide-React icons
 - **Backend-as-a-Service**: Supabase (PostgreSQL, Auth, Storage)
 - **Testing**: Vitest + React Testing Library (unit/integration), Playwright (E2E/UI), Playwright-axe (accessibility)
+- **Deployment**: Cloudflare Pages with GitHub Actions CI/CD
 - **Tooling**: ESlint, Prettier, Husky & lint-staged, Node `22.14.0`
 
 ---
@@ -465,6 +468,68 @@ curl -X POST http://localhost:3000/api/measurements \
     "notes": "Morning measurement before breakfast"
   }'
 ```
+
+---
+
+## Deployment to Cloudflare Pages
+
+This project is configured to deploy to Cloudflare Pages using GitHub Actions.
+
+### Prerequisites
+
+1. A Cloudflare account with a Pages project created
+2. GitHub repository with the following secrets configured:
+
+### Required GitHub Secrets
+
+Configure these secrets in your repository settings (`Settings > Secrets and variables > Actions`):
+
+| Secret Name               | Description                                                                    |
+| ------------------------- | ------------------------------------------------------------------------------ |
+| `CLOUDFLARE_API_TOKEN`    | API token from Cloudflare with Pages write permissions                         |
+| `CLOUDFLARE_ACCOUNT_ID`   | Your Cloudflare account ID                                                     |
+| `CLOUDFLARE_PROJECT_NAME` | The name of your Cloudflare Pages project                                      |
+| `PUBLIC_SUPABASE_URL`     | Your Supabase project URL (public)                                             |
+| `PUBLIC_SUPABASE_KEY`     | Your Supabase anon key (public)                                                |
+| `SUPABASE_URL`            | Your Supabase project URL (for server-side API)                                |
+| `SUPABASE_KEY`            | Your Supabase service role key (for server-side API with elevated permissions) |
+| `OPENROUTER_API_KEY`      | OpenRouter API key (if using AI features)                                      |
+
+### Deployment Workflow
+
+The project uses two CI/CD workflows:
+
+1. **Pull Request Workflow** (`.github/workflows/pull-request.yml`)
+   - Runs on every pull request to `master`
+   - Executes linting, unit tests, and E2E tests
+   - Posts a status comment on successful completion
+
+2. **Master Workflow** (`.github/workflows/master.yml`)
+   - Runs on every push to `master` branch
+   - Executes linting and unit tests (no E2E tests for faster deployment)
+   - Automatically deploys to Cloudflare Pages on success
+
+### Manual Deployment
+
+To deploy manually from your local machine:
+
+```bash
+# 1. Build the project
+npm run build
+
+# 2. Deploy using Wrangler CLI (requires Cloudflare login)
+npx wrangler pages deploy dist --project-name=your-project-name
+```
+
+### Environment Variables in Cloudflare
+
+After the first deployment, configure environment variables in Cloudflare Dashboard:
+
+1. Go to `Workers & Pages > your-project > Settings > Environment variables`
+2. Add the following variables for production:
+   - `PUBLIC_SUPABASE_URL`
+   - `PUBLIC_SUPABASE_KEY`
+   - `PUBLIC_ENV_NAME` (set to `production`)
 
 ---
 

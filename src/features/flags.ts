@@ -2,7 +2,7 @@
  * Feature Flags System
  *
  * Centralny moduł do zarządzania flagami funkcjonalności.
- * Flagi są oceniane w czasie budowania (build-time) na podstawie zmiennej ENV_NAME.
+ * Flagi są oceniane w czasie budowania (build-time) na podstawie zmiennej PUBLIC_ENV_NAME.
  */
 
 export const featureFlags = {
@@ -23,7 +23,7 @@ export const featureFlags = {
   },
 } as const;
 
-const CURRENT_ENV = (import.meta.env.ENV_NAME as keyof typeof featureFlags) || "local";
+const CURRENT_ENV = (import.meta.env.PUBLIC_ENV_NAME as keyof typeof featureFlags) || "local";
 
 /**
  * Sprawdza, czy dana funkcjonalność jest włączona w bieżącym środowisku.

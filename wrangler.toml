@@ -1,0 +1,16 @@
+# Wrangler configuration for Cloudflare Pages
+# This file is optional when using GitHub Actions deployment
+# It's useful for local development and manual deployments
+
+name = "10x-bp-tracker"
+compatibility_date = "2025-11-11"
+
+# Pages configuration
+pages_build_output_dir = "./dist"
+
+# Environment variables (these should be set in Cloudflare Dashboard)
+# [env.production.vars]
+# PUBLIC_SUPABASE_URL = "your_value_here"
+# PUBLIC_SUPABASE_KEY = "your_value_here"
+# PUBLIC_ENV_NAME = "production"
+
