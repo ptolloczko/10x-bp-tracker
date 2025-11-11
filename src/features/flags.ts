@@ -16,10 +16,10 @@ export const featureFlags = {
     measurement: true,
     profile: false,
   },
-  prod: {
+  production: {
     auth: true,
-    measurement: false,
-    profile: false,
+    measurement: true,
+    profile: true,
   },
 } as const;
 
