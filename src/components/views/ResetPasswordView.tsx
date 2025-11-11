@@ -133,14 +133,21 @@ export default function ResetPasswordView() {
     setError(undefined);
 
     try {
-      // Call the reset password API endpoint
-      await authApiClient.resetPassword(data.password);
+      // Update password directly using Supabase client (session is already set from recovery link)
+      const { error: updateError } = await supabaseClient.auth.updateUser({
+        password: data.password,
+      });
+
+      if (updateError) {
+        throw new Error(updateError.message);
+      }
 
       // Show success message
       setSuccess(true);
 
-      // Redirect to login after 2 seconds
-      setTimeout(() => {
+      // Sign out to clear recovery session and redirect to login after 2 seconds
+      setTimeout(async () => {
+        await supabaseClient.auth.signOut();
         window.location.href = "/login";
       }, 2000);
     } catch (err) {

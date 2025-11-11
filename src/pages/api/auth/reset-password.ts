@@ -89,7 +89,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const accessToken = authHeader.substring(7);
 
-    // 4. Create a new Supabase client with the user's access token
+    // 4. Get refresh token from cookies (if available)
+    const refreshToken = request.headers.get("Cookie")?.match(/sb-refresh-token=([^;]+)/)?.[1] || "";
+
+    // 5. Create a new Supabase client and set the session
     const { createClient } = await import("@supabase/supabase-js");
     const supabaseUrl = import.meta.env.SUPABASE_URL;
     const supabaseKey = import.meta.env.SUPABASE_KEY;
@@ -97,17 +100,50 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const supabaseWithAuth = createClient(supabaseUrl, supabaseKey, {
       auth: {
         persistSession: false,
-      },
-      global: {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
+        autoRefreshToken: false,
       },
     });
 
-    // 5. Update password via AuthService with authenticated client
-    const authService = new AuthService(supabaseWithAuth);
-    await authService.updatePassword(validatedData.password);
+    // Set the session with access token (refresh token is optional for this operation)
+    const { data: sessionData, error: sessionError } = await supabaseWithAuth.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
+
+    if (sessionError || !sessionData.session) {
+      // eslint-disable-next-line no-console
+      console.error("[POST /api/auth/reset-password] Failed to set session:", sessionError);
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized",
+          message: "Sesja wygasła lub jest nieprawidłowa. Spróbuj ponownie wysłać link resetujący.",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // 6. Update password using the authenticated client
+    const { error: updateError } = await supabaseWithAuth.auth.updateUser({
+      password: validatedData.password,
+    });
+
+    if (updateError) {
+      // eslint-disable-next-line no-console
+      console.error("[POST /api/auth/reset-password] Failed to update password:", updateError);
+      return new Response(
+        JSON.stringify({
+          error: "UpdateError",
+          message: updateError.message || "Nie udało się zaktualizować hasła",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
 
     // eslint-disable-next-line no-console
     console.log("[POST /api/auth/reset-password] Password updated successfully");
