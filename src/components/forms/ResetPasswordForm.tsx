@@ -50,7 +50,7 @@ export function ResetPasswordForm({ onSubmit, isSubmitting, error }: ResetPasswo
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" data-form-type="other">
         {/* Error message */}
         {error && (
           <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
@@ -69,6 +69,8 @@ export function ResetPasswordForm({ onSubmit, isSubmitting, error }: ResetPasswo
                 <Input
                   type="password"
                   placeholder="••••••••"
+                  data-lpignore="true"
+                  data-form-type="other"
                   {...field}
                   disabled={isSubmitting}
                   autoComplete="new-password"
@@ -91,6 +93,8 @@ export function ResetPasswordForm({ onSubmit, isSubmitting, error }: ResetPasswo
                 <Input
                   type="password"
                   placeholder="••••••••"
+                  data-lpignore="true"
+                  data-form-type="other"
                   {...field}
                   disabled={isSubmitting}
                   autoComplete="new-password"

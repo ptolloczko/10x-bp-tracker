@@ -2,6 +2,12 @@
 // src/pages/login.astro
 import Layout from "@/layouts/Layout.astro";
 import LoginView from "@/components/views/LoginView";
+import { isFeatureEnabled } from "@/features/flags";
+
+// Check if auth feature is enabled
+if (!isFeatureEnabled("auth")) {
+  return Astro.redirect("/");
+}
 
 // If user is already logged in, redirect to measurements
 if (Astro.locals.user) {

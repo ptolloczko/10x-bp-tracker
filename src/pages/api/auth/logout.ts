@@ -2,6 +2,7 @@
 import type { APIRoute } from "astro";
 
 import { AuthService } from "@/lib/services/auth.service";
+import { isFeatureEnabled } from "@/features/flags";
 
 export const prerender = false;
 
@@ -17,6 +18,14 @@ export const prerender = false;
  */
 export const POST: APIRoute = async ({ locals, cookies }) => {
   try {
+    // Check if auth feature is enabled
+    if (!isFeatureEnabled("auth")) {
+      return new Response(JSON.stringify({ error: "Feature disabled" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // 1. Sign out from Supabase
     // This invalidates the session on Supabase side
     const authService = new AuthService(locals.supabase);

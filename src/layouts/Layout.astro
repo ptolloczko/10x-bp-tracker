@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import LogoutButton from "@/components/LogoutButton";
+import { isFeatureEnabled } from "@/features/flags";
 
 interface Props {
   title?: string;
@@ -10,6 +11,9 @@ const { title = "10x Astro Starter" } = Astro.props;
 
 // Get user from context.locals (set by middleware)
 const user = Astro.locals.user;
+
+// Check if auth feature is enabled
+const isAuthEnabled = isFeatureEnabled("auth");
 ---
 
 <!doctype html>
@@ -46,17 +50,19 @@ const user = Astro.locals.user;
                 >
                   Profil
                 </a>
-                <LogoutButton client:load />
+                {isAuthEnabled && <LogoutButton client:load />}
               </>
             ) : (
               <>
                 {/* Logged out navigation */}
-                <a
-                  href="/login"
-                  class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Zaloguj się
-                </a>
+                {isAuthEnabled && (
+                  <a
+                    href="/login"
+                    class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Zaloguj się
+                  </a>
+                )}
               </>
             )
           }

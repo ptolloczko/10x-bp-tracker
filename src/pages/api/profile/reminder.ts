@@ -3,6 +3,7 @@ import type { APIRoute } from "astro";
 import { z, ZodError } from "zod";
 
 import { ProfileService } from "../../../lib/services/profile.service";
+import { isFeatureEnabled } from "../../../features/flags";
 
 export const prerender = false;
 
@@ -30,6 +31,14 @@ const ToggleReminderSchema = z.object({
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    // Check if profile feature is enabled
+    if (!isFeatureEnabled("profile")) {
+      return new Response(JSON.stringify({ error: "Feature disabled" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // 1. Check authentication
     if (!locals.user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {

@@ -5,6 +5,7 @@ import { ZodError } from "zod";
 import { CreateMeasurementSchema, GetMeasurementsQuerySchema } from "../../../lib/validators/measurement";
 import { MeasurementService, MeasurementDuplicateError } from "../../../lib/services/measurement.service";
 import type { MeasurementDTO, MeasurementListResponse } from "../../../types";
+import { isFeatureEnabled } from "../../../features/flags";
 
 export const prerender = false;
 
@@ -22,6 +23,14 @@ export const prerender = false;
  */
 export const GET: APIRoute = async ({ url, locals }) => {
   try {
+    // Check if measurement feature is enabled
+    if (!isFeatureEnabled("measurement")) {
+      return new Response(JSON.stringify({ error: "Feature disabled" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // 1. Check authentication
     if (!locals.user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -95,6 +104,14 @@ export const GET: APIRoute = async ({ url, locals }) => {
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    // Check if measurement feature is enabled
+    if (!isFeatureEnabled("measurement")) {
+      return new Response(JSON.stringify({ error: "Feature disabled" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // 1. Check authentication
     if (!locals.user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {

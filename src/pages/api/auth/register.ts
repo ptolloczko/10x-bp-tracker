@@ -5,6 +5,7 @@ import { ZodError } from "zod";
 import { RegisterRequestSchema } from "@/lib/validators/auth";
 import { AuthService } from "@/lib/services/auth.service";
 import { ProfileService } from "@/lib/services/profile.service";
+import { isFeatureEnabled } from "@/features/flags";
 
 export const prerender = false;
 
@@ -27,6 +28,14 @@ export const prerender = false;
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    // Check if auth feature is enabled
+    if (!isFeatureEnabled("auth")) {
+      return new Response(JSON.stringify({ error: "Feature disabled" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // 1. Parse and validate request body
     let body: unknown;
     try {

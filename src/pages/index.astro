@@ -2,11 +2,32 @@
 // src/pages/index.astro
 // Redirect to appropriate page based on authentication status
 // If logged in -> /measurements (main app page)
-// If not logged in -> /login
+// If not logged in -> /login (only if auth is enabled)
+import Layout from "@/layouts/Layout.astro";
+import { isFeatureEnabled } from "@/features/flags";
+
+const isAuthEnabled = isFeatureEnabled("auth");
 
 if (Astro.locals.user) {
   return Astro.redirect("/measurements");
-} else {
+} else if (isAuthEnabled) {
   return Astro.redirect("/login");
 }
+// If auth is disabled and user is not logged in, show home page
 ---
+
+<Layout title="Strona główna">
+  <div class="container mx-auto px-4 py-16">
+    <div class="max-w-2xl mx-auto text-center">
+      <h1 class="text-4xl font-bold mb-4">Witaj w BP Tracker</h1>
+      <p class="text-xl text-muted-foreground mb-8">Aplikacja do śledzenia pomiarów ciśnienia krwi</p>
+      {
+        !isAuthEnabled && (
+          <div class="bg-muted p-6 rounded-lg">
+            <p class="text-sm text-muted-foreground">System autoryzacji jest obecnie wyłączony.</p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Layout>

@@ -9,6 +9,7 @@ import {
   MeasurementNotFoundError,
 } from "../../../lib/services/measurement.service";
 import type { MeasurementDTO } from "../../../types";
+import { isFeatureEnabled } from "../../../features/flags";
 
 export const prerender = false;
 
@@ -27,6 +28,14 @@ export const prerender = false;
  */
 export const PUT: APIRoute = async ({ params, request, locals }) => {
   try {
+    // Check if measurement feature is enabled
+    if (!isFeatureEnabled("measurement")) {
+      return new Response(JSON.stringify({ error: "Feature disabled" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const { id } = params;
 
     if (!id) {
@@ -150,6 +159,14 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
  */
 export const DELETE: APIRoute = async ({ params, locals }) => {
   try {
+    // Check if measurement feature is enabled
+    if (!isFeatureEnabled("measurement")) {
+      return new Response(JSON.stringify({ error: "Feature disabled" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const { id } = params;
 
     if (!id) {

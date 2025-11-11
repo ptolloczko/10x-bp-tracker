@@ -52,7 +52,7 @@ export function RegisterForm({ onSubmit, isSubmitting, error }: RegisterFormProp
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" data-form-type="other">
         {/* Error message */}
         {error && (
           <div
@@ -75,6 +75,8 @@ export function RegisterForm({ onSubmit, isSubmitting, error }: RegisterFormProp
                   type="email"
                   placeholder="twoj@email.pl"
                   data-test-id="register-email-input"
+                  data-lpignore="true"
+                  data-form-type="other"
                   {...field}
                   disabled={isSubmitting}
                   autoComplete="email"
@@ -97,6 +99,8 @@ export function RegisterForm({ onSubmit, isSubmitting, error }: RegisterFormProp
                   type="password"
                   placeholder="••••••••"
                   data-test-id="register-password-input"
+                  data-lpignore="true"
+                  data-form-type="other"
                   {...field}
                   disabled={isSubmitting}
                   autoComplete="new-password"
@@ -120,6 +124,8 @@ export function RegisterForm({ onSubmit, isSubmitting, error }: RegisterFormProp
                   type="password"
                   placeholder="••••••••"
                   data-test-id="register-confirm-password-input"
+                  data-lpignore="true"
+                  data-form-type="other"
                   {...field}
                   disabled={isSubmitting}
                   autoComplete="new-password"

@@ -5,6 +5,7 @@ import { ZodError } from "zod";
 import { CreateProfileInput, UpdateProfileSchema } from "../../lib/validators/profile";
 import { ProfileService, ProfileExistsError } from "../../lib/services/profile.service";
 import type { ProfileDTO } from "../../types";
+import { isFeatureEnabled } from "../../features/flags";
 
 export const prerender = false;
 
@@ -21,6 +22,14 @@ export const prerender = false;
  */
 export const GET: APIRoute = async ({ locals }) => {
   try {
+    // Check if profile feature is enabled
+    if (!isFeatureEnabled("profile")) {
+      return new Response(JSON.stringify({ error: "Feature disabled" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // 1. Check authentication
     if (!locals.user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -75,6 +84,14 @@ export const GET: APIRoute = async ({ locals }) => {
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    // Check if profile feature is enabled
+    if (!isFeatureEnabled("profile")) {
+      return new Response(JSON.stringify({ error: "Feature disabled" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // 1. Check authentication
     if (!locals.user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -146,6 +163,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
  */
 export const PUT: APIRoute = async ({ request, locals }) => {
   try {
+    // Check if profile feature is enabled
+    if (!isFeatureEnabled("profile")) {
+      return new Response(JSON.stringify({ error: "Feature disabled" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // 1. Check authentication
     if (!locals.user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {

@@ -4,6 +4,7 @@ import { ZodError } from "zod";
 
 import { ResetPasswordRequestSchema } from "@/lib/validators/auth";
 import { AuthService } from "@/lib/services/auth.service";
+import { isFeatureEnabled } from "@/features/flags";
 
 export const prerender = false;
 
@@ -20,6 +21,14 @@ export const prerender = false;
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    // Check if auth feature is enabled
+    if (!isFeatureEnabled("auth")) {
+      return new Response(JSON.stringify({ error: "Feature disabled" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // 1. Check if user is authenticated (via token from email link)
     if (!locals.user) {
       // eslint-disable-next-line no-console

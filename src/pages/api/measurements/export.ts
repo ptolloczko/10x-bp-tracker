@@ -2,6 +2,7 @@
 import type { APIRoute } from "astro";
 
 import { MeasurementService } from "../../../lib/services/measurement.service";
+import { isFeatureEnabled } from "../../../features/flags";
 
 export const prerender = false;
 
@@ -18,6 +19,14 @@ export const prerender = false;
  */
 export const GET: APIRoute = async ({ locals }) => {
   try {
+    // Check if measurement feature is enabled
+    if (!isFeatureEnabled("measurement")) {
+      return new Response(JSON.stringify({ error: "Feature disabled" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // 1. Check authentication
     if (!locals.user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {

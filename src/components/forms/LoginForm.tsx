@@ -40,7 +40,7 @@ export function LoginForm({ onSubmit, isSubmitting, error }: LoginFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" data-form-type="other">
         {/* Error message */}
         {error && (
           <div
@@ -63,6 +63,8 @@ export function LoginForm({ onSubmit, isSubmitting, error }: LoginFormProps) {
                   type="email"
                   placeholder="twoj@email.pl"
                   data-test-id="login-email-input"
+                  data-lpignore="true"
+                  data-form-type="other"
                   {...field}
                   disabled={isSubmitting}
                   autoComplete="email"
@@ -85,6 +87,8 @@ export function LoginForm({ onSubmit, isSubmitting, error }: LoginFormProps) {
                   type="password"
                   placeholder="••••••••"
                   data-test-id="login-password-input"
+                  data-lpignore="true"
+                  data-form-type="other"
                   {...field}
                   disabled={isSubmitting}
                   autoComplete="current-password"
