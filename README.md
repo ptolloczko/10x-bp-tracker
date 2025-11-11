@@ -579,13 +579,18 @@ npx wrangler pages deploy dist --project-name=your-project-name
 
 ### Environment Variables in Cloudflare
 
-After the first deployment, configure environment variables in Cloudflare Dashboard:
+**IMPORTANT**: Cloudflare Pages needs environment variables configured for **both** build-time AND runtime.
+
+#### Configure in Cloudflare Dashboard:
 
 1. Go to `Workers & Pages > your-project > Settings > Environment variables`
-2. Add the following variables for production:
-   - `PUBLIC_SUPABASE_URL`
-   - `PUBLIC_SUPABASE_KEY`
-   - `PUBLIC_ENV_NAME` (set to `production`)
+2. Select **Production** environment
+3. Add these variables (they're already set during build via GitHub Actions, but needed here for consistency):
+   - `PUBLIC_SUPABASE_URL` = your Supabase project URL
+   - `PUBLIC_SUPABASE_KEY` = your Supabase anon key
+   - `PUBLIC_ENV_NAME` = `production` (must match exactly!)
+
+> **Why this matters**: Variables prefixed with `PUBLIC_` are inlined during build by Astro, but Cloudflare also needs them configured to avoid hydration mismatches. The values must be **identical** to what's set in GitHub Actions during build.
 
 ### Troubleshooting Deployment Issues
 
@@ -633,6 +638,36 @@ After the first deployment, configure environment variables in Cloudflare Dashbo
 2. ✅ Verify `npm run build` works locally
 3. ✅ Check GitHub Actions logs for specific error messages
 4. ✅ Ensure all required dependencies are in `dependencies` (not just `devDependencies`)
+
+#### ❌ React Error #418 / Hydration Mismatch in Production
+
+**Error in console**: `Uncaught Error: Minified React error #418`
+
+**Cause**: HTML generated on the server doesn't match what React renders on the client. Usually caused by missing or mismatched environment variables.
+
+**Solutions**:
+
+1. ✅ **Configure `PUBLIC_ENV_NAME` in Cloudflare Dashboard**:
+   - Go to: `Workers & Pages > your-project > Settings > Environment variables`
+   - Select **Production** environment
+   - Add: `PUBLIC_ENV_NAME` = `production` (exactly as shown!)
+
+2. ✅ **Verify all PUBLIC\_\* variables match between GitHub Actions and Cloudflare**:
+   - GitHub Actions (build-time): set in `env:` section of `deploy` job
+   - Cloudflare (runtime): set in Dashboard under Environment variables
+   - Values must be **identical**
+
+3. ✅ **Check variable names match exactly**:
+   - It's `production` not `prod` (check `src/features/flags.ts`)
+   - Variable names are case-sensitive
+
+4. ✅ **Rebuild and redeploy** after setting environment variables:
+   - Push a new commit to trigger rebuild
+   - Or manually redeploy from Cloudflare Dashboard
+
+5. ✅ **Clear browser cache and hard reload** (Ctrl+F5 or Cmd+Shift+R)
+
+> **Technical explanation**: Astro inlines `PUBLIC_*` variables during build. If these variables differ between build-time (GitHub Actions) and runtime (Cloudflare), it causes hydration errors because the server-rendered HTML uses build-time values while React on the client tries to use runtime values.
 
 ---
 
