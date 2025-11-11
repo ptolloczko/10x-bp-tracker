@@ -2,7 +2,6 @@
 
 A lightweight web application that helps users manually record, interpret and export blood pressure measurements according to the 2023 European Society of Cardiology / European Society of Hypertension (ESC/ESH) guidelines.
 
-
 ---
 
 ## Table of Contents
@@ -14,6 +13,7 @@ A lightweight web application that helps users manually record, interpret and ex
 5. [Project Scope](#project-scope)
 6. [Project Status](#project-status)
 7. [License](#license)
+8. [Deployment & Hosting Analysis](#deployment--hosting-analysis)
 
 ---
 
@@ -465,6 +465,86 @@ curl -X POST http://localhost:3000/api/measurements \
     "notes": "Morning measurement before breakfast"
   }'
 ```
+
+---
+
+## Deployment & Hosting Analysis
+
+A detailed analysis was conducted to recommend hosting solutions for this web application, considering its potential growth from a side project into a commercial product. The primary requirement is a platform that can run a Node.js server for Astro's server-side rendering (SSR) capabilities.
+
+### Recommended Platforms
+
+| Platform             | Score | Summary                                                                                                                                                                 |
+| -------------------- | :---: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Cloudflare Pages** | 10/10 | **Top Recommendation.** Ideal for a growing project. Offers a world-class free tier for commercial use, outstanding edge performance, and predictable low-cost scaling. |
+| **Netlify**          | 9/10  | A very strong and safe choice with a great developer experience and a commercially friendly free tier. A solid starting point for any project.                          |
+| **Vercel**           | 8/10  | Fantastic developer experience, but its free "Hobby" plan strictly forbids commercial use, making it a risky choice for a potential startup.                            |
+
+### Alternative Platforms
+
+| Platform                      | Score | Summary                                                                                                                                                                           |
+| ----------------------------- | :---: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Render**                    | 8/10  | A great balance between ease-of-use and control. The lack of a free, always-on tier for server components is its main drawback for a pre-revenue project.                         |
+| **DigitalOcean App Platform** | 7/10  | Powerful and cost-effective, but the higher complexity and DevOps overhead make it less ideal for a small team focused on rapid development. Best for when you need more control. |
+
+### Detailed Critique
+
+<details>
+<summary>Click to expand for a detailed critique of each platform</summary>
+
+#### 1. Main Framework Analysis
+
+The main framework is Astro, which operates on a flexible model. It can generate static HTML files or run as a server-side rendered (SSR) application using a Node.js environment. Given the use of a Supabase backend and the potential for commercial growth, the application will require SSR for dynamic routes and user authentication. Therefore, the hosting solution must support a long-running Node.js process.
+
+#### 2. Recommended Hosting Services (from Astro Core Team)
+
+1.  **Vercel**: A serverless platform with deep integration for modern web frameworks.
+2.  **Netlify**: A leading platform for building and deploying web applications with a focus on Jamstack architecture.
+3.  **Cloudflare Pages**: A platform that leverages Cloudflare's global edge network for high-performance hosting and serverless functions.
+
+#### 3. Alternative Platforms
+
+1.  **DigitalOcean App Platform**: A Platform-as-a-Service (PaaS) that simplifies running applications on DigitalOcean's infrastructure, with support for Node.js and Docker containers.
+2.  **Render**: A unified cloud platform to build and run apps and websites, offering a Heroku-like developer experience with support for Node.js services and Docker containers.
+
+#### 4. Critique of Solutions
+
+**a) Vercel**
+
+- **Deployment**: Extremely simple. Connect a Git repository, and it deploys on every push.
+- **Compatibility**: Perfect. Seamless support for Astro SSR via Vercel Functions.
+- **Environments**: Excellent. Every pull request automatically gets its own preview deployment.
+- **Plans**: `Hobby` plan is generous but strictly **non-commercial**. `Pro` plan at $20/user/month plus usage-based billing can become expensive.
+
+**b) Netlify**
+
+- **Deployment**: Very simple, mirrors the Vercel experience.
+- **Compatibility**: Excellent. Full support for Astro's SSR via Netlify Functions.
+- **Environments**: Excellent. Provides "Deploy Previews" for pull requests.
+- **Plans**: Free tier is solid and **allows commercial use**, but has limits on build minutes (300/month). Paid plans start at $19/user/month.
+
+**c) Cloudflare Pages**
+
+- **Deployment**: Simple Git-based workflow.
+- **Compatibility**: Excellent. Astro SSR is handled via Cloudflare Workers, offering superior performance.
+- **Environments**: Excellent. Offers unlimited, free preview deployments.
+- **Plans**: The free plan is the most generous, **allows commercial use**, and has high limits. The paid plan is a predictable flat $20/month for even higher limits.
+
+**d) DigitalOcean App Platform**
+
+- **Deployment**: More complex, requiring more explicit configuration of the app spec.
+- **Compatibility**: High. Full control over the Node.js environment.
+- **Environments**: Possible, but requires manual setup of multiple "apps".
+- **Plans**: Pricing is resource-based and predictable (starts at $5/month). No free tier for server-based applications.
+
+**e) Render**
+
+- **Deployment**: Simple Git-based workflow.
+- **Compatibility**: High. Natively supports Node.js and Docker containers.
+- **Environments**: Good. "Pull Request Previews" are a feature on paid plans.
+- **Plans**: Free tier for services **spins down after 15 minutes of inactivity**. The lowest-tier paid plan ($7/month) is required for an always-on service.
+
+</details>
 
 ---
 

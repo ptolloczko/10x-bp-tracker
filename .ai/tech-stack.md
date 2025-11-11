@@ -27,3 +27,19 @@ CI/CD i Hosting:
 
 - Github Actions do tworzenia pipeline'ów CI/CD
 - DigitalOcean do hostowania aplikacji za pośrednictwem obrazu docker
+- **Analiza Hostingu**: Przeprowadzono analizę w celu wyboru optymalnej platformy hostingowej, biorąc pod uwagę potencjalny rozwój projektu w kierunku komercyjnym. Głównym wymaganiem jest wsparcie dla środowiska Node.js w celu obsługi renderowania po stronie serwera (SSR) przez Astro.
+
+### Rekomendowane Platformy
+
+|| Platforma         | Ocena | Podsumowanie                                                                                                                                            |
+|| ----------------- | :---: | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|| **Cloudflare Pages** | 10/10 | **Najlepsza rekomendacja.** Idealna dla rosnącego projektu. Oferuje najlepszy darmowy plan do użytku komercyjnego, wyjątkową wydajność dzięki sieci edge i przewidywalne, niskie koszty skalowania. |
+|| **Netlify**         | 9/10  | Bardzo solidny i bezpieczny wybór. Świetne doświadczenie deweloperskie i darmowy plan przyjazny komercyjnie, co stanowi doskonały punkt startowy dla projektu.     |
+|| **Vercel**          | 8/10  | Fantastyczne doświadczenie deweloperskie, ale darmowy plan "Hobby" kategorycznie zabrania użytku komercyjnego, co czyni go ryzykownym wyborem dla potencjalnego startupu. |
+
+### Platformy Alternatywne
+
+|| Platforma                 | Ocena | Podsumowanie                                                                                                                                                                 |
+|| ------------------------- | :---: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|| **Render**                | 8/10  | Świetny kompromis między łatwością użycia a kontrolą. Główną wadą dla projektu przed monetyzacją jest brak darmowego, zawsze aktywnego planu dla usług serwerowych.                  |
+|| **DigitalOcean App Platform** | 7/10  | Potężna i efektywna kosztowo, ale większa złożoność i narzut DevOps sprawiają, że jest mniej idealna dla małego zespołu skupionego na szybkim rozwoju. Najlepsza, gdy potrzebujesz większej kontroli. |
